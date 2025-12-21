@@ -17,12 +17,12 @@ class TabscannerClient:
         self.api_key = api_key
         self.headers = {"apikey": self.api_key}
 
-    def scan(self, image_path, max_wait=90, poll_interval=2):
+    def scan(self, image_path, max_attempts=2, poll_wait=20):
         """
         Returns a dict: {ingredient_name: qty}.
         """
 
-        raw = self._process_receipt(image_path, max_wait, poll_interval)
+        raw = self._process_receipt(image_path, max_attempts, poll_wait)
         parsed = self._extract_items(raw)
 
         return parsed  # final output: dict(name → qty)
@@ -30,7 +30,7 @@ class TabscannerClient:
     
 
     #Internal funcs for raw and parsed data
-    def _process_receipt(self, image_path, max_wait, poll_interval):
+    def _process_receipt(self, image_path, max_attempts, poll_wait):
 
         if not os.path.exists(image_path):
             raise FileNotFoundError(f"Image not found: {image_path}")
@@ -49,17 +49,18 @@ class TabscannerClient:
         if not token:
             raise RuntimeError(f"Upload failed: {json.dumps(js, indent=2)}")
 
-        # Poll
         result_url = f"https://api.tabscanner.com/api/result/{token}"
 
-        for _ in range(max_wait // poll_interval):
-            time.sleep(poll_interval)
+        for _ in range(max_attempts):
+            time.sleep(poll_wait)
+            # Poll
+            
             r = requests.get(result_url, headers=self.headers)
             js = r.json()
 
             status = (js.get("status") or "").lower()
 
-            if status in ("success", "done", "completed"):
+            if status in ("success", "done", "completed"): #if any update in the API
                 return js
 
         raise TimeoutError("Tabscanner took too long to process the receipt.")
@@ -110,3 +111,5 @@ class TabscannerClient:
             items[name] = qty
 
         return items
+
+
