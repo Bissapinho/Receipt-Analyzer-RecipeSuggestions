@@ -88,7 +88,8 @@ class TabscannerClient:
         for it in line_items:
             # Name extraction (robust)
             name = (
-                it.get("desc")
+                it.get("descClean")
+                or it.get("desc")
                 or it.get("description")
                 or it.get("item")
                 or it.get("name")
