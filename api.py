@@ -113,4 +113,6 @@ class TabscannerClient:
 
         return items
 
-
+a = TabscannerClient()
+items = a.scan("C:/Users/alexa/Downloads/WhatsApp Image 2025-10-25 à 09.58.28_8540ddf0.jpg")
+print(items)
