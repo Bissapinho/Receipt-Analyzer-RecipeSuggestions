@@ -7,7 +7,24 @@ import os
 
 API_KEY = "dfzb14GyfmBUGsFkoIawlI375oewd8tA7szqRHk1glUptAF2qsBy6uPWmmrunxKO"
 
+def is_parasite(item, qty):
+        item = item.strip().lower()
+        item = re.sub(r'\s+', ' ', item)
 
+        #handles vrac items and return name: qty in kg
+        if 'vrac' in item:
+            result = a.split('vrac ')
+            name = result[0]
+            qtykg = float(result[1].split(' kg')[0].replace(',', '.'))
+            return name, qtykg
+        
+        bad_words = (
+            'tva', 'ht', 'kraft', 'payer', '20,00%', '20%', 'merci', 'thank'
+            )
+        
+        if bad_words not in item:
+            return item, qty
+        
 class TabscannerClient:
     """
     Silent Tabscanner OCR client.
@@ -99,9 +116,6 @@ class TabscannerClient:
             if not name:
                 continue
 
-            name = name.strip().lower()
-            name = re.sub(r'\s+', ' ', name)
-
 
             # Quantity extraction (float)
             qty = it.get("qty") or it.get("quantity") or 1
@@ -111,21 +125,17 @@ class TabscannerClient:
             except:
                 qty = 1.0
 
+            name, qty = is_parasite(name, qty)
+
             # Store in dictionary
             items[name] = qty
         
-        bad_words = (
-            'tva', 'ht', 'kraft', 'payer', '20,00%', '20%', 'merci', 'thank'
-            )
+        return items
+    
+    
+        
 
-        clean_items = {
-            name: qty
-            for name, qty in items.items()
-            if not any(word in name for word in bad_words)
-        }
-            
 
-        return clean_items
 
 #for testing
 a = TabscannerClient()
