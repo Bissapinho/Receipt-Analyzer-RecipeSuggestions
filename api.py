@@ -3,9 +3,10 @@ import time
 import json
 import os
 
-
-API_KEY = "dfzb14GyfmBUGsFkoIawlI375oewd8tA7szqRHk1glUptAF2qsBy6uPWmmrunxKO"
-
+# Idk who's
+# API_KEY = "dfzb14GyfmBUGsFkoIawlI375oewd8tA7szqRHk1glUptAF2qsBy6uPWmmrunxKO"
+# Elvira's
+API_KEY = "aR62wn7mREuNIFsKb5Isl8iPRZR4oqtCPURXaSxCVZCa7ecesaJARlJnN1ka7NTi"
 
 class TabscannerClient:
     """
