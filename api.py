@@ -1,12 +1,12 @@
 import requests
 import time
 import json
+import re
 import os
 
-# Idk who's
-# API_KEY = "dfzb14GyfmBUGsFkoIawlI375oewd8tA7szqRHk1glUptAF2qsBy6uPWmmrunxKO"
-# Elvira's
-API_KEY = "aR62wn7mREuNIFsKb5Isl8iPRZR4oqtCPURXaSxCVZCa7ecesaJARlJnN1ka7NTi"
+
+API_KEY = "dfzb14GyfmBUGsFkoIawlI375oewd8tA7szqRHk1glUptAF2qsBy6uPWmmrunxKO"
+
 
 class TabscannerClient:
     """
@@ -100,6 +100,8 @@ class TabscannerClient:
                 continue
 
             name = name.strip().lower()
+            name = re.sub(r'\s+', ' ', name)
+
 
             # Quantity extraction (float)
             qty = it.get("qty") or it.get("quantity") or 1
@@ -111,12 +113,23 @@ class TabscannerClient:
 
             # Store in dictionary
             items[name] = qty
+        
+        bad_words = (
+            'tva', 'ht', 'kraft', 'payer', '20,00%', '20%', 'merci', 'thank'
+            )
 
-        return items
+        clean_items = {
+            name: qty
+            for name, qty in items.items()
+            if not any(word in name for word in bad_words)
+        }
+            
 
+        return clean_items
 
-if __name__ == "__main__":
-    # Test code - only runs when executing api.py directly
-    a = TabscannerClient()
-    items = a.scan("C:/Users/alexa/Downloads/WhatsApp Image 2025-10-25 à 09.58.28_8540ddf0.jpg")
-    print(items)
+#for testing
+a = TabscannerClient()
+items = a.scan("C:/Users/alexa/Downloads/WhatsApp Image 2025-10-25 à 09.58.28_8540ddf0.jpg")
+print(items)
+
+#next remove items such as sac kraft, and remove prices from the item description
