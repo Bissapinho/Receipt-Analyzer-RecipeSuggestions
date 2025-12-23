@@ -7,23 +7,29 @@ import os
 
 API_KEY = "dfzb14GyfmBUGsFkoIawlI375oewd8tA7szqRHk1glUptAF2qsBy6uPWmmrunxKO"
 
+#func to use in the class to handle specific items
 def is_parasite(item, qty):
-        item = item.strip().lower()
-        item = re.sub(r'\s+', ' ', item)
+    item = item.strip().lower()
+    item = re.sub(r'\s+', ' ', item)
 
-        #handles vrac items and return name: qty in kg
-        if 'vrac' in item:
-            result = a.split('vrac ')
-            name = result[0]
-            qtykg = float(result[1].split(' kg')[0].replace(',', '.'))
-            return name, qtykg
-        
-        bad_words = (
-            'tva', 'ht', 'kraft', 'payer', '20,00%', '20%', 'merci', 'thank'
+    # Handle vrac items
+    if 'vrac' in item:
+        try:
+            name, rest = item.split('vrac', 1)
+            qtykg = float(
+                re.search(r'([\d,\.]+)\s*kg', rest).group(1).replace(',', '.')
             )
-        
-        if bad_words not in item:
-            return item, qty
+            return name.strip(), qtykg
+        except Exception:
+            return None, None
+
+    bad_words = ('tva', 'ht', 'kraft', 'payer', 'merci', 'thank', '%')
+
+    if any(word in item for word in bad_words):
+        return None, None
+
+    return item, qty
+
         
 class TabscannerClient:
     """
@@ -127,6 +133,9 @@ class TabscannerClient:
 
             name, qty = is_parasite(name, qty)
 
+            if name is None:
+                continue
+
             # Store in dictionary
             items[name] = qty
         
@@ -142,4 +151,4 @@ a = TabscannerClient()
 items = a.scan("C:/Users/alexa/Downloads/WhatsApp Image 2025-10-25 à 09.58.28_8540ddf0.jpg")
 print(items)
 
-#next remove items such as sac kraft, and remove prices from the item description
+#next remove prices from the item description
