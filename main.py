@@ -100,6 +100,8 @@ def save_session_to_file(filename="history_log.txt"):
 
 def main():
     # 1. Setup inventory
+
+    # Here it will take from fridge class for inventory
     inventory = {
         "tomato": 3,
         "egg": 4,

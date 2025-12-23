@@ -114,6 +114,9 @@ class TabscannerClient:
 
         return items
 
-a = TabscannerClient()
-items = a.scan("C:/Users/alexa/Downloads/WhatsApp Image 2025-10-25 à 09.58.28_8540ddf0.jpg")
-print(items)
+
+if __name__ == "__main__":
+    # Test code - only runs when executing api.py directly
+    a = TabscannerClient()
+    items = a.scan("C:/Users/alexa/Downloads/WhatsApp Image 2025-10-25 à 09.58.28_8540ddf0.jpg")
+    print(items)
