@@ -86,7 +86,7 @@ class Fridge:
         if filename is None:
             filename = f'{self.user}_fridge.json'
         data = {
-            'username': self.userm
+            'username': self.user,
             'inventory': self.inventory
         }
 
@@ -99,6 +99,6 @@ class Fridge:
         Empty fridge
         """
         double_checker = input('Are you sure you want to delete all items from fridge? [Yes/No] \n')
-        if double_checker = 'Yes':
+        if double_checker == 'Yes':
             self.inventory = {}
             print('All items deleted from fridge')
