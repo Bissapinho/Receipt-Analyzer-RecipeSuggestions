@@ -8,27 +8,63 @@ import os
 API_KEY = "dfzb14GyfmBUGsFkoIawlI375oewd8tA7szqRHk1glUptAF2qsBy6uPWmmrunxKO"
 
 #func to use in the class to handle specific items
-def is_parasite(item, qty):
+def clean_ocr_item(item: str, qty: float):
+    """
+    Cleans and normalizes an OCR-extracted receipt line.
+    """
+
+    if not item:
+        return None, None
+
+    #Text normalization
     item = item.strip().lower()
-    item = re.sub(r'\s+', ' ', item)
+    item = re.sub(r"\s+", " ", item)
 
-    # Handle vrac items
-    if 'vrac' in item:
-        try:
-            name, rest = item.split('vrac', 1)
-            qtykg = float(
-                re.search(r'([\d,\.]+)\s*kg', rest).group(1).replace(',', '.')
-            )
-            return name.strip(), qtykg
-        except Exception:
-            return None, None
+    #Remove prices
+    item = re.sub(r"\s*\d+(?:[.,]\d+)?\s*€", "", item)
 
-    bad_words = ('tva', 'ht', 'kraft', 'payer', 'merci', 'thank', '%')
+    #Remove promotions / marketing noise
+    CLEAN_PATTERN = r"""
+        \b(promo|offre|maxi)\b
+        |
+        \b(format\s+familial|grand\s+format)\b
+        |
+        \d+\s*x\s*\d+
+        |
+        \bx\d+\b
+        |
+        -?\d+%
+    """
+    item = re.sub(CLEAN_PATTERN, "", item, flags=re.I | re.VERBOSE)
 
+    #Final spacing cleanup
+    item = re.sub(r"\s{2,}", " ", item).strip()
+
+    #Handle vrac items
+    if "vrac" in item:
+        weight_match = re.search(r"([\d,.]+)\s*kg", item)
+        if weight_match:
+            try:
+                qtykg = float(weight_match.group(1).replace(",", "."))
+                name = (
+                    item.replace(weight_match.group(0), "")
+                        .replace("vrac", "")
+                        .strip()
+                )
+                return name, qtykg
+            except ValueError:
+                return None, None
+
+    #Filter parasitic lines
+    bad_words = ("tva", "ht", "kraft", "payer", "merci", "thank")
     if any(word in item for word in bad_words):
         return None, None
 
-    return item, qty
+    if not item:
+        return None, None
+
+    return item, float(qty)
+
 
         
 class TabscannerClient:
@@ -131,7 +167,7 @@ class TabscannerClient:
             except:
                 qty = 1.0
 
-            name, qty = is_parasite(name, qty)
+            name, qty = clean_ocr_item(name, qty)
 
             if name is None:
                 continue
@@ -141,12 +177,6 @@ class TabscannerClient:
         
         return items
     
-    
-        
 
-#for testing future
-a = TabscannerClient()
-items = a.scan("C:/2_MSc/IntroToPython/Project/IMG_8947.jpg")
-print(items)
 
 #next remove prices from the item description
