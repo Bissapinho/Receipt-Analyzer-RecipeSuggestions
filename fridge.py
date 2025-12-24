@@ -2,26 +2,21 @@ from api import TabscannerClient
 from tabulate import tabulate
 import json
 
-receipt = input("Enter path to receipt: \n")
-test_scanner = TabscannerClient()
-items2 = test_scanner.scan(f"{receipt}")
-
-username = input("Enter your name: \n")
 
 class Fridge:
     """
     Fridge class, inventory management
     """
-    def __init__(self, username, nr_ingredients, inventory=None):
+    def __init__(self, username, nr_ingredients=0, inventory=None):
         self.user = username
-        self.nr_ingredients = len(inventory)
         self.inventory = inventory if inventory else {}
+        self.nr_ingredients = len(self.inventory)
 
     def __repr__(self):
         """
         How is represented as an object in shell
         """
-        return f'Fridge({self.name}, nr_ingr: {self.nr_ingredients}'
+        return f'Fridge({self.user}, nr_ingr: {self.nr_ingredients})'
 
     def __str__(self):
         """
@@ -46,36 +41,53 @@ class Fridge:
     def add_item(self, item, qty):
         item = item.lower().strip()
         self.inventory[item] = self.inventory.get(item, 0) + qty
+        self.nr_ingredients = len(self.inventory)
     
-    def remove_item(self, item, qty):
+    def remove_item(self, item, qty): # change into dic pair if better for rest of code?
         item = item.lower().strip()
         if item in self.inventory:
             self.inventory[item] = max(0, self.inventory[item] - qty)
+            if self.inventory[item] == 0:
+                del self.inventory[item]
+        self.nr_ingredients = len(self.inventory)
 
         
     def deduct_by_recipe(self, recipe):
         """
         Deducts all items in a recipe if has been cooked
+        Output from Ollama recipe suggester:
+                {
+            "name": "Recipe Name",
+            "ingredients": ["item1", "item2"],
+            "steps": ["step1", "step2"]
+        }
         """
-        for ingredient, qty in recipe:
-            self.remove_item(ingredient, qty)
+        if self.has_items(recipe) == False:
+            print('Cant be deducted since not available in fridge')
+            return None
+        for ingredient in recipe['ingredients']:
+            self.remove_item(ingredient, 1) # need to see how we can match number of ingredients with recipe output
+        self.nr_ingredients = len(self.inventory)
+        print('Ingredients have been removed from recipe')
+
     
     def has_items(self, recipe):
         """
         For checking whether recipe matches given fridge
         """
-        for item in recipe:
+        for item in recipe['ingredients']:
             if item not in self.inventory:
-                return f"There in no {item} in fridge."
-            else:
-                return True
+                print(f"There is no {item} in fridge.")
+                return False
+        return True
 
     def load_from_receipt(self, receipt_dic):
         """
         Directly add all items from scanned receipt into fridge
         """
-        for item, qty in receipt_dic:
+        for item, qty in receipt_dic.items():
             self.add_item(item, qty)
+        self.nr_ingredients = len(self.inventory)
         print('Items have been added to fridge!')
         
     
@@ -102,3 +114,29 @@ class Fridge:
         if double_checker == 'Yes':
             self.inventory = {}
             print('All items deleted from fridge')
+        self.nr_ingredients = len(self.inventory)
+
+
+
+if __name__ == '__main__':
+    # a = TabscannerClient()
+    # items = a.scan(r"C:\2_MSc\IntroToPython\Project\IMG_8947.jpg")
+    # print(items)
+    items = {
+        'milk': 2.0,
+        'eggs': 1.0,
+        'bread': 1.0
+    }
+
+    b = Fridge('Elvira')
+
+    b.load_from_receipt(items)
+
+    # Test deduct_by_recipe
+    recipe = {
+        'name': 'Omelette',
+        'ingredients': ['eggs', 'milk'],
+        'steps': ['beat eggs', 'cook']
+    }
+    b.deduct_by_recipe(recipe)
+    print(b)

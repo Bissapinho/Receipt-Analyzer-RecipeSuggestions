@@ -148,7 +148,7 @@ class TabscannerClient:
 
 #for testing
 a = TabscannerClient()
-items = a.scan("C:/Users/alexa/Downloads/WhatsApp Image 2025-10-25 à 09.58.28_8540ddf0.jpg")
+items = a.scan("C:/2_MSc/IntroToPython/Project/IMG_8947.jpg")
 print(items)
 
 #next remove prices from the item description
