@@ -7,16 +7,17 @@ class Fridge:
     """
     Fridge class, inventory management
     """
-    def __init__(self, username, nr_ingredients=0, inventory=None):
+    def __init__(self, username, inventory=None):
         self.user = username
         self.inventory = inventory if inventory else {}
-        self.nr_ingredients = len(self.inventory)
+
 
     def __repr__(self):
         """
         How is represented as an object in shell
         """
-        return f'Fridge({self.user}, nr_ingr: {self.nr_ingredients})'
+        return f"Fridge(user='{self.user}', items={len(self.inventory)})"
+
 
     def __str__(self):
         """
@@ -35,8 +36,7 @@ class Fridge:
         will return true is item is in inventory
         """
         item = item.lower().strip()
-        if item in self.inventory and self.inventory[item] > 0:
-            return True
+        return item in self.inventory and self.inventory[item] > 0
 
     def add_item(self, item, qty):
         item = item.lower().strip()
@@ -46,40 +46,29 @@ class Fridge:
     def remove_item(self, item, qty): # change into dic pair if better for rest of code?
         item = item.lower().strip()
         if item in self.inventory:
-            self.inventory[item] = max(0, self.inventory[item] - qty)
-            if self.inventory[item] == 0:
+            self.inventory[item] -= qty
+            if self.inventory[item] <= 0:
                 del self.inventory[item]
-        self.nr_ingredients = len(self.inventory)
+
 
         
     def deduct_by_recipe(self, recipe):
         """
         Deducts all items in a recipe if has been cooked
-        Output from Ollama recipe suggester:
-                {
-            "name": "Recipe Name",
-            "ingredients": ["item1", "item2"],
-            "steps": ["step1", "step2"]
-        }
         """
-        if self.has_items(recipe) == False:
-            print('Cant be deducted since not available in fridge')
-            return None
-        for ingredient in recipe['ingredients']:
-            self.remove_item(ingredient, 1) # need to see how we can match number of ingredients with recipe output
-        self.nr_ingredients = len(self.inventory)
-        print('Ingredients have been removed from recipe')
+        for ingredient, qty in recipe.items():
+            self.remove_item(ingredient, qty)
 
     
     def has_items(self, recipe):
         """
         For checking whether recipe matches given fridge
         """
-        for item in recipe['ingredients']:
-            if item not in self.inventory:
-                print(f"There is no {item} in fridge.")
+        for item, qty in recipe.items():
+            if self.inventory.get(item.lower().strip(), 0) < qty:
                 return False
         return True
+
 
     def load_from_receipt(self, receipt_dic):
         """

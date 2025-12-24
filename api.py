@@ -144,9 +144,7 @@ class TabscannerClient:
     
         
 
-
-
-#for testing
+#for testing future
 a = TabscannerClient()
 items = a.scan("C:/2_MSc/IntroToPython/Project/IMG_8947.jpg")
 print(items)
