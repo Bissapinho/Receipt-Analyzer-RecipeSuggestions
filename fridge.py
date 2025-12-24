@@ -12,16 +12,17 @@ class Fridge:
     """
     Fridge class, inventory management
     """
-    def __init__(self, username, nr_ingredients, inventory=None):
+    def __init__(self, username, inventory=None):
         self.user = username
-        self.nr_ingredients = len(inventory)
         self.inventory = inventory if inventory else {}
+
 
     def __repr__(self):
         """
         How is represented as an object in shell
         """
-        return f'Fridge({self.name}, nr_ingr: {self.nr_ingredients}'
+        return f"Fridge(user='{self.user}', items={len(self.inventory)})"
+
 
     def __str__(self):
         """
@@ -40,8 +41,7 @@ class Fridge:
         will return true is item is in inventory
         """
         item = item.lower().strip()
-        if item in self.inventory and self.inventory[item] > 0:
-            return True
+        return item in self.inventory and self.inventory[item] > 0
 
     def add_item(self, item, qty):
         item = item.lower().strip()
@@ -50,31 +50,35 @@ class Fridge:
     def remove_item(self, item, qty):
         item = item.lower().strip()
         if item in self.inventory:
-            self.inventory[item] = max(0, self.inventory[item] - qty)
+            self.inventory[item] -= qty
+            if self.inventory[item] <= 0:
+                del self.inventory[item]
+
 
         
     def deduct_by_recipe(self, recipe):
         """
         Deducts all items in a recipe if has been cooked
         """
-        for ingredient, qty in recipe:
+        for ingredient, qty in recipe.items():
             self.remove_item(ingredient, qty)
+
     
     def has_items(self, recipe):
         """
         For checking whether recipe matches given fridge
         """
-        for item in recipe:
-            if item not in self.inventory:
-                return f"There in no {item} in fridge."
-            else:
-                return True
+        for item, qty in recipe.items():
+            if self.inventory.get(item.lower().strip(), 0) < qty:
+                return False
+        return True
+
 
     def load_from_receipt(self, receipt_dic):
         """
         Directly add all items from scanned receipt into fridge
         """
-        for item, qty in receipt_dic:
+        for item, qty in receipt_dic.items():
             self.add_item(item, qty)
         print('Items have been added to fridge!')
         
