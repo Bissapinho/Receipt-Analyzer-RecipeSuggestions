@@ -1,6 +1,7 @@
 from api import TabscannerClient
 from tabulate import tabulate
 import json
+import os
 
 
 class Fridge:
@@ -69,6 +70,7 @@ class Fridge:
             self.remove_item(ingredient, 1) # need to see how we can match number of ingredients with recipe output
         self.nr_ingredients = len(self.inventory)
         print('Ingredients have been removed from recipe')
+        print(f'Inventory left in fridge is: \n {self.inventory}')
 
     
     def has_items(self, recipe):
@@ -90,21 +92,24 @@ class Fridge:
             self.add_item(item, qty)
         self.nr_ingredients = len(self.inventory)
         print('Items have been added to fridge!')
-        
+            
     
-    def save_fridge(self, filename=None):
+    def save_fridge(self, filename='all_fridges.json'):
         """
-        Save all items into json file
+        Stores fridges and their inventory into json file
         """
-        if filename is None:
-            filename = f'{self.user}_fridge.json'
-        data = {
-            'username': self.user,
-            'inventory': self.inventory
-        }
+        # Load or create new file
+        if os.path.exists(filename):
+            with open(filename, 'r') as f:
+                all_data = json.load(f)
+        else:
+            all_data = {}
+        
+        # Update users fridge:
+        all_data[self.user] = {'inventory': self.inventory}
 
-        with open(filename, 'w', encoding='utf-8') as f:
-            json.dump(data, f, indent=2)  # indent=2 makes it readable
+        with open(filename, 'w') as f:
+            json.dump(all_data, f, indent=2)
 
     
     def clear_fridge(self):
@@ -116,7 +121,16 @@ class Fridge:
             self.inventory = {}
             print('All items deleted from fridge')
         self.nr_ingredients = len(self.inventory)
-
+    
+    @classmethod # creates a new instance of fridge by loading from json file
+    def load_fridge(cls, user, filename='all_fridges.json'):
+        try:
+            with open(filename, 'r') as f:
+                data = json.load(f)
+            return cls(user, inventory=data[user]['inventory'])
+        except FileNotFoundError:
+            # Create new fridge if doesn't exist
+            return Fridge(user)
 
 
 if __name__ == '__main__':
