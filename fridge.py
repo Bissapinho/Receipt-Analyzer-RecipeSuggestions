@@ -128,9 +128,9 @@ class Fridge:
             with open(filename, 'r') as f:
                 data = json.load(f)
             return cls(user, inventory=data[user]['inventory'])
-        except FileNotFoundError:
-            # Create new fridge if doesn't exist
-            return Fridge(user)
+        except (FileNotFoundError, KeyError):
+            # Create new fridge if file doesn't exist or user not in file
+            return cls(user)
 
 
 if __name__ == '__main__':

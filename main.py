@@ -182,11 +182,21 @@ def scan_and_store_fridge(user):
     fridge.load_from_receipt(dic)
     fridge.save_fridge()
 
-def view_fridge(user):
+def view_fridge(user, filename='usernames.json'):
+    if os.path.exists(filename):
+        with open(filename, 'r') as f:
+            usernames = json.load(f)
+    else:
+        usernames = []
+
+    if user not in usernames:
+        return print(f'{user} does not have a fridge yet')
+    
     fridge = Fridge.load_fridge(user)
     print(fridge)
 
 
+# MAIN APP FUNCTION
 def main():
     user = prompt_username()
     while True:
