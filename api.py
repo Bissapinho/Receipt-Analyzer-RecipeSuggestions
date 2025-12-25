@@ -25,7 +25,7 @@ def clean_ocr_item(item: str, qty: float):
     item = re.sub(r"\s+", " ", item)
 
     #Remove prices
-    item = re.sub(r"\s*\d+(?:[.,]\d+)?\s*€", "", item)
+    item = re.sub(r"(€\s*\d+[.,]?\d*|\d+[.,]?\d*\s*(€|eur|/kg))", "", item)
 
     #Remove promotions / marketing noise
     CLEAN_PATTERN = r"""
@@ -177,7 +177,8 @@ class TabscannerClient:
                 continue
 
             # Store in dictionary
-            items[name] = qty
+            items[name] = items.get(name, 0) + qty
+
         
         return items
     
