@@ -1,0 +1,21 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Menu</title>
+    <style>
+        body { font-family: Arial; margin: 50px; }
+        ul { list-style: none; padding: 0; }
+        li { margin: 10px 0; }
+        a { padding: 10px 20px; background-color: #008CBA; color: white; text-decoration: none; border-radius: 5px; }
+        a:hover { background-color: #007399; }
+    </style>
+</head>
+<body>
+    <h1>Welcome, {{ username }}!</h1>
+    <ul>
+        <li><a href="{{ url_for('view_fridge') }}">📦 View Fridge</a></li>
+        <li><a href="{{ url_for('get_recipes') }}">🍳 Get Recipes</a></li>
+        <li><a href="{{ url_for('logout') }}">🚪 Logout</a></li>
+    </ul>
+</body>
+</html>

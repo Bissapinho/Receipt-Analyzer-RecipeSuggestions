@@ -22,7 +22,7 @@ def show_suggestions(suggestions, history=None):
     """
     Display suggestions using the log function.
     """
-    log("\n=== 🍽 Recipe Suggestions ===")
+    log("\n=== Recipe Suggestions ===")
 
     if not suggestions:
         log("No suggestions available.")
@@ -51,7 +51,7 @@ def show_suggestions(suggestions, history=None):
         n = int(choice)
         if 1 <= n <= len(suggestions):
             selected = suggestions[n - 1]
-            log(f"\n👍 Accepted: {selected.get('name')}")
+            log(f"\nAccepted: {selected.get('name')}")
 
             if history:
                 history.add(selected.get('name'), status="accepted")
@@ -66,7 +66,7 @@ def show_suggestions(suggestions, history=None):
 #     """
 #     Deduct ingredients and log remaining stock.
 #     """
-#     log("\n=== 📦 Remaining Inventory ===")
+#     log("\n=== Remaining Inventory ===")
 
 #     if recipe:
 #         for item in recipe.get('ingredients', []):
@@ -97,9 +97,9 @@ def save_session_to_file(filename="history_log.txt"):
 
             f.write("\n" + "=" * 60 + "\n")
 
-        print(f"\n✅ All data (Suggestions, Inventory, History) exported to '{filename}'")
+        print(f"\n All data (Suggestions, Inventory, History) exported to '{filename}'")
     except Exception as e:
-        print(f"❌ Failed to export: {e}")
+        print(f"Failed to export: {e}")
 
 
 
@@ -198,6 +198,7 @@ def view_fridge(user, filename='usernames.json'):
 
 # MAIN APP FUNCTION
 def main():
+    print("Application started")
     user = prompt_username()
     while True:
         choice = prompt_menu()
@@ -207,3 +208,6 @@ def main():
         # elif choice == "history": show_history(user)
         else: break
 
+
+if __name__ == '__main__':
+    main()
