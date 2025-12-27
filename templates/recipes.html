@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>AI Suggestions - MySmartFridge</title>
+    <style>
+        body { font-family: 'Segoe UI', sans-serif; max-width: 800px; margin: auto; padding: 20px; background: #f8fafc; }
+        .recipe-card { background: white; border-radius: 12px; padding: 25px; margin-bottom: 20px; box-shadow: 0 4px 6px rgba(0,0,0,0.1); }
+        .tag { background: #dbeafe; color: #1e40af; padding: 4px 10px; border-radius: 99px; font-size: 12px; margin: 3px; display: inline-block; }
+        .btn { padding: 12px 24px; border-radius: 6px; border: none; cursor: pointer; color: white; text-decoration: none; display: inline-block; text-align: center; }
+        .btn-back { background: #64748b; margin-bottom: 20px; }
+        .btn-accept { background: #10b981; font-weight: bold; margin-top: 15px; width: 100%; }
+        .btn-reject { background: #ef4444; font-size: 14px; margin-top: 8px; width: 100%; }
+    </style>
+</head>
+<body>
+    <h1>👩‍🍳🍳 MySmartFridge AI Chef</h1>
+    <a href="/" class="btn btn-back">← Back to Dashboard</a>
+
+    {% if suggestions %}
+        {% for recipe in suggestions %}
+        <div class="recipe-card">
+            <h2>{{ recipe.name }}</h2>
+            <p><strong>Ingredients:</strong></p>
+            <div>
+                {% for ing in recipe.ingredients %}
+                <span class="tag">{{ ing }}</span>
+                {% endfor %}
+            </div>
+            <p><strong>Instructions:</strong></p>
+            <ol>
+                {% for step in recipe.steps %}
+                <li>{{ step }}</li>
+                {% endfor %}
+            </ol>
+
+            <div style="margin-top: 20px;">
+                <form action="/accept_recipe" method="post">
+                    <input type="hidden" name="recipe_name" value="{{ recipe.name }}">
+                    <input type="hidden" name="ingredients" value="{{ recipe.ingredients | join(',') }}">
+                    <button type="submit" class="btn btn-accept">✅ Accept Recipe & Use Ingredients</button>
+                </form>
+                <a href="/" class="btn btn-reject">✖ Reject This Recipe</a>
+            </div>
+        </div>
+        {% endfor %}
+    {% else %}
+        <div class="recipe-card" style="text-align: center;">
+            <h3 style="color: #ef4444;">⚠️ AI Parsing Error</h3>
+            <p>The AI output was malformed. Please try again.</p>
+            <a href="/suggest" class="btn" style="background: #3b82f6;">Retry Generation</a>
+        </div>
+    {% endif %}
+</body>
+</html>

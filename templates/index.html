@@ -1,0 +1,195 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MySmartFridge - Dashboard</title>
+    <style>
+        :root {
+            --primary: #3b82f6;
+            --primary-hover: #2563eb;
+            --success: #10b981;
+            --danger: #ef4444;
+            --bg: #f8fafc;
+            --card-bg: #ffffff;
+            --text-main: #1e293b;
+            --text-muted: #64748b;
+            --border: #e2e8f0;
+        }
+
+        body {
+            font-family: 'Inter', -apple-system, system-ui, sans-serif;
+            background-color: var(--bg);
+            color: var(--text-main);
+            margin: 0;
+            line-height: 1.5;
+        }
+
+        /* Header Styles based on reference */
+        .header {
+            background: #ffffff;
+            color: var(--text-main);
+            padding: 1.5rem 2.5rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-bottom: 1px solid var(--border);
+        }
+
+        .header h1 { margin: 0; font-size: 1.8rem; letter-spacing: -0.5px; font-weight: 700; }
+
+        .user-box {
+            background: white;
+            padding: 10px 20px;
+            border-radius: 10px;
+            border: 1px solid var(--border);
+            box-shadow: 0 4px 6px -1px rgba(0,0,0,0.05);
+            font-size: 0.9rem;
+        }
+
+        .logout-btn {
+            background: var(--primary);
+            color: white;
+            padding: 6px 12px;
+            border-radius: 6px;
+            text-decoration: none;
+            margin-left: 10px;
+            font-weight: 600;
+        }
+
+        .container { max-width: 1000px; margin: 2rem auto; padding: 0 1.5rem; }
+
+        /* Grid Layout */
+        .grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 1.5rem;
+            margin-bottom: 2rem;
+        }
+
+        /* Card Styles */
+        .card {
+            background: var(--card-bg);
+            border-radius: 12px;
+            padding: 1.5rem;
+            border: 1px solid var(--border);
+            transition: transform 0.2s, box-shadow 0.2s;
+        }
+        .card:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 10px 15px -3px rgba(0,0,0,0.1);
+        }
+        .card h3 { margin-top: 0; font-size: 1.1rem; display: flex; align-items: center; gap: 10px; }
+
+        /* Button Styles */
+        .btn {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            padding: 0.7rem 1.2rem;
+            border-radius: 8px;
+            font-weight: 600;
+            font-size: 0.9rem;
+            cursor: pointer;
+            transition: all 0.2s;
+            text-decoration: none;
+            border: none;
+            width: 100%;
+            box-sizing: border-box;
+        }
+        .btn-scan { background: var(--success); color: white; }
+        .btn-suggest { background: var(--primary); color: white; }
+        .btn-history { background: #f1f5f9; color: var(--text-main); }
+        .btn-clear { background: #fff1f2; color: var(--danger); }
+
+        /* Table Styles */
+        .table-card {
+            background: white;
+            border-radius: 12px;
+            border: 1px solid var(--border);
+            overflow: hidden;
+        }
+        table { width: 100%; border-collapse: collapse; }
+        th { background: #f8fafc; padding: 1rem; text-align: left; font-size: 0.8rem; color: var(--text-muted); border-bottom: 1px solid var(--border); }
+        td { padding: 1rem; border-bottom: 1px solid var(--border); }
+
+        .status-pill {
+            background: #f0fdf4;
+            color: #166534;
+            padding: 2px 8px;
+            border-radius: 6px;
+            font-size: 0.75rem;
+            font-weight: 700;
+        }
+
+        .empty-state { text-align: center; padding: 4rem; color: var(--text-muted); }
+    </style>
+</head>
+<body>
+    <header class="header">
+        <h1>MySmartFridge 🍳</h1>
+        <div class="user-box">
+            Welcome, <span style="color: var(--primary); font-weight: 700;">{{ user }}</span>
+            <a href="/logout" class="logout-btn">Logout</a>
+        </div>
+    </header>
+
+    <div class="container">
+        <div class="grid">
+            <div class="card">
+                <h3>📷 Update Inventory</h3>
+                <p style="color: var(--text-muted); font-size: 0.85rem; margin-bottom: 1.5rem;">Sync your fridge by uploading a new receipt photo.</p>
+                <form action="/upload" method="post" enctype="multipart/form-data">
+                    <input type="file" name="file" accept="image/*" required style="margin-bottom: 1rem; font-size: 0.8rem; width: 100%;">
+                    <button type="submit" class="btn btn-scan">Start Scanning</button>
+                </form>
+            </div>
+
+            <div class="card">
+                <h3>👩‍🍳 AI Chef</h3>
+                <p style="color: var(--text-muted); font-size: 0.85rem; margin-bottom: 1.5rem;">Let AI create recipes based on your current items.</p>
+                <a href="/suggest" class="btn btn-suggest" style="margin-top: 1.2rem;">Generate Recipes</a>
+            </div>
+
+            <div class="card">
+                <h3>⚙️ Settings</h3>
+                <p style="color: var(--text-muted); font-size: 0.85rem; margin-bottom: 1rem;">View history or reset your data.</p>
+                <div style="display: flex; flex-direction: column; gap: 8px;">
+                    <a href="/history" class="btn btn-history">View History</a>
+                    <form action="/clear" method="post" onsubmit="return confirm('Clear all data?');">
+                        <button type="submit" class="btn btn-clear">Empty Fridge</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+
+        <div class="table-card">
+            <div style="padding: 1rem 1.5rem; border-bottom: 1px solid var(--border); font-weight: 700;">Inventory List</div>
+            {% if inventory %}
+                <table>
+                    <thead>
+                        <tr>
+                            <th>ITEM NAME</th>
+                            <th>STATUS</th>
+                            <th style="text-align: right;">QTY</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for item, qty in inventory.items() %}
+                        <tr>
+                            <td style="font-weight: 600;">{{ item.capitalize() }}</td>
+                            <td><span class="status-pill">IN STOCK</span></td>
+                            <td style="text-align: right; font-weight: 700;">{{ qty }}</td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            {% else %}
+                <div class="empty-state">
+                    <p>Fridge is empty. Scan a receipt to begin!</p>
+                </div>
+            {% endif %}
+        </div>
+    </div>
+</body>
+</html>
