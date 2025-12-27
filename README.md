@@ -30,18 +30,22 @@ pip install -r requirements.txt
 
 ```powershell
 winget install Ollama.Ollama
+ollama serve
 ollama pull llama3.2
 ```
 
 ## Usage
 
 ```powershell
-python Receipt-Analyzer-RecipeSuggestions/main.py
+python Receipt-Analyzer-RecipeSuggestions/app.py
 ```
+Go to browser and paste http://localhost:5000 into address bar.
 
 1. Enter username
 2. Choose action: 
 	1. scan receipt
 	2. get recipes based on current fridge inventory
 	3. view current fridge
+
+Press ```ctrl + C ``` to stop running app.
 

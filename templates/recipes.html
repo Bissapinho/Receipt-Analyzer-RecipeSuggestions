@@ -3,17 +3,52 @@
 <head>
     <title>Recipes</title>
     <style>
-        body { font-family: Arial; margin: 50px; }
-        .recipe { border: 1px solid #ddd; padding: 15px; margin: 10px 0; border-radius: 5px; }
-        .recipe h2 { color: #4CAF50; }
-        .ingredients { background-color: #f9f9f9; padding: 10px; border-radius: 3px; }
-        a { padding: 10px 20px; background-color: #008CBA; color: white; text-decoration: none; border-radius: 5px; margin-top: 20px; display: inline-block; }
+        body { 
+            font-family: Arial; 
+            display: flex; 
+            flex-direction: column;
+            justify-content: center; 
+            align-items: center; 
+            min-height: 100vh; 
+            margin: 0;
+            background-color: #f5f5f5;
+            padding: 20px;
+            box-sizing: border-box;
+        }
+        .container {
+            background: white;
+            padding: 40px;
+            border-radius: 10px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            width: 700px;
+            max-width: 100%;
+        }
+        h1 { color: #333; margin-bottom: 30px; text-align: center; }
+        .recipe { border: 1px solid #ddd; padding: 20px; margin: 15px 0; border-radius: 5px; background-color: #fafafa; }
+        .recipe h2 { color: #4CAF50; margin-top: 0; }
+        .ingredients { background-color: #f0f0f0; padding: 15px; border-radius: 5px; margin: 10px 0; }
+        .ingredients ul { margin: 5px 0; }
+        ol { margin: 10px 0; }
+        p { text-align: center; color: #666; margin: 20px 0; }
+        a { 
+            display: inline-block;
+            padding: 10px 20px; 
+            background-color: #008CBA; 
+            color: white; 
+            text-decoration: none; 
+            border-radius: 5px;
+            width: 100%;
+            text-align: center;
+            box-sizing: border-box;
+            margin-top: 20px;
+        }
         a:hover { background-color: #007399; }
     </style>
 </head>
 <body>
-    <h1>🍽 Recipe Suggestions</h1>
-    {% if recipes %}
+    <div class="container">
+        <h1>🍽 Recipe Suggestions</h1>
+        {% if recipes %}
         {% for recipe in recipes %}
         <div class="recipe">
             <h2>{{ recipe.name }}</h2>
@@ -36,9 +71,15 @@
         </div>
         {% endfor %}
     {% else %}
-    <p>No recipes available. Add items to your fridge!</p>
+        {% if error_message %}
+            <p style="color: #d9534f; font-weight: bold;">⚠️ {{ error_message }}</p>
+        {% elif not has_items %}
+            <p>No recipes available. Add items to your fridge!</p>
+        {% else %}
+            <p style="color: #d9534f; font-weight: bold;">⚠️ Llama has to be activated for recipe suggestions. Please run 'ollama serve' in a terminal.</p>
+        {% endif %}
     {% endif %}
-    <br>
-    <a href="{{ url_for('menu') }}">← Back to Menu</a>
+        <a href="{{ url_for('menu') }}">← Back to Menu</a>
+    </div>
 </body>
 </html>

@@ -116,7 +116,7 @@ def main_recipe_suggestor(user):
     #     "onion": 1
     # }
 
-    with open("all_fridges.json", 'r') as f:
+    with open("data/all_fridges.json", 'r') as f:
         fridge = Fridge.load_fridge(user)
         inventory = fridge.inventory
 
@@ -147,7 +147,7 @@ def main_recipe_suggestor(user):
     save_session_to_file()
 
 
-def prompt_username(filename='usernames.json'):
+def prompt_username(filename='data/usernames.json'):
     # Ask for username:
     name = str(input('Enter your username: \n'))
 
@@ -182,7 +182,7 @@ def scan_and_store_fridge(user):
     fridge.load_from_receipt(dic)
     fridge.save_fridge()
 
-def view_fridge(user, filename='usernames.json'):
+def view_fridge(user, filename='data/usernames.json'):
     if os.path.exists(filename):
         with open(filename, 'r') as f:
             usernames = json.load(f)

@@ -1,4 +1,4 @@
-from flask import Flask, render_template, request, session, redirect, url_for
+from flask import Flask, render_template, request, session, redirect, url_for, flash
 from fridge import Fridge
 from recipe_suggester_ollama import RecipeSuggesterOllama
 from api import TabscannerClient
@@ -38,10 +38,52 @@ def view_fridge():
 def get_recipes():
     if 'username' not in session:
         return redirect(url_for('login'))
+    
     fridge = Fridge.load_fridge(session['username'])
-    suggester = RecipeSuggesterOllama(model="llama3.2")
-    recipes = suggester.suggest(fridge.inventory)
-    return render_template('recipes.html', recipes=recipes)
+    recipes = []
+    error_message = None
+    
+    if not fridge.inventory:
+        # Fridge is empty
+        pass
+    else:
+        # Fridge has items, try to get recipes
+        try:
+            suggester = RecipeSuggesterOllama(model="llama3.2")
+            recipes = suggester.suggest(fridge.inventory)
+            
+            # If no recipes returned but fridge has items, assume Ollama issue
+            if not recipes:
+                error_message = "Llama has to be activated for recipe suggestions. Please run 'ollama serve' in a terminal."
+        except Exception as e:
+            error_message = "Llama has to be activated for recipe suggestions. Please run 'ollama serve' in a terminal."
+    
+    return render_template('recipes.html', recipes=recipes, error_message=error_message, has_items=bool(fridge.inventory))
+
+@app.route('/scan', methods=['GET', 'POST'])
+def scan_receipt():
+    if 'username' not in session:
+        return redirect(url_for('login'))
+    
+    if request.method == 'POST':
+        file_path = request.form.get('file_path')
+        
+        if file_path:
+            try:
+                client = TabscannerClient()
+                items = client.scan(file_path)
+                
+                fridge = Fridge.load_fridge(session['username'])
+                fridge.load_from_receipt(items)
+                fridge.save_fridge()
+                
+                flash(f'Successfully added {len(items)} items to your fridge!', 'success')
+            except Exception as e:
+                flash(f'Error scanning receipt: {str(e)}', 'error')
+        else:
+            flash('Please provide a file path', 'error')
+    
+    return render_template('scan.html')
 
 @app.route('/logout')
 def logout():
