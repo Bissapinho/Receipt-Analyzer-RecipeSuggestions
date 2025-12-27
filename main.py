@@ -5,6 +5,8 @@ import json
 from api import TabscannerClient
 from fridge import Fridge
 import os
+from tkinter import filedialog, Tk
+from dashboard import show_dashboard
 
 # Global buffer to store all output
 SESSION_LOG = []
@@ -168,19 +170,32 @@ def prompt_username(filename='usernames.json'):
 
 
 def prompt_menu():
-    choice = input('Do you want to (indicate number): \n [1] Scan a receipt \n [2] Get recipe suggestions \n [3] View your fridge \n')
+    choice = input('Do you want to (indicate number): \n [1] Scan a receipt \n [2] Get recipe suggestions \n [3] View your fridge \n [4] View Dashboard \n')
     return str(choice)
 
 def scan_and_store_fridge(user):
-    # Scan receipt
-    file_path = str(input('Please input the path to your receipt:\n'))
+    root = Tk()
+    root.withdraw()
+    root.attributes('-topmost', True)
+
+    # Open system file dialog
+    file_path = filedialog.askopenfilename(
+        title="Select Receipt Image",
+        filetypes=[("Image files", "*.jpg *.jpeg *.png")]
+    )
+    root.destroy()
+
+    if not file_path:
+        log("Scan cancelled: No file selected.")
+        return
+
     inst = TabscannerClient()
     dic = inst.scan(file_path)
 
-    # Put into fridge
     fridge = Fridge.load_fridge(user)
     fridge.load_from_receipt(dic)
     fridge.save_fridge()
+    log(f"✅ Success: Scanned {os.path.basename(file_path)}")
 
 def view_fridge(user, filename='usernames.json'):
     if os.path.exists(filename):
@@ -204,6 +219,7 @@ def main():
         if choice == "1": scan_and_store_fridge(user)
         elif choice == "2": main_recipe_suggestor(user)
         elif choice == "3": view_fridge(user)
+        elif choice == "4": show_dashboard(user)
         # elif choice == "history": show_history(user)
         else: break
 
