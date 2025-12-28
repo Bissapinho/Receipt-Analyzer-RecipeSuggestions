@@ -20,5 +20,15 @@
       "linguine barilla 500g 1,13": 2.0,
       "freedent chewing gum 70g": 2.0
     }
+  },
+  "Bissapinho": {
+    "inventory": {
+      "sac kraft brun poignees": 1.0,
+      "filets de harengs fumes": 1.0,
+      "bananes vrac": 0.156,
+      "boche chevre": 0.18,
+      "linguine barilla": 0.5,
+      "freedent chewing gum": 0.07
+    }
   }
 }

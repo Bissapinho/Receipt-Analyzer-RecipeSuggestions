@@ -13,6 +13,16 @@ API_KEY = os.getenv("API_KEY")
 if not API_KEY:
     raise RuntimeError("API_KEY not found in .env file")
 
+FORBIDDEN_KEYWORDS = [
+    "total", "payer", "tva", "ht", "ttc",
+    "merci", "carte", "credit", "debit",
+    "ticket", "auto", "numero", "montant"
+]
+
+def is_candidate_food_item(name: str) -> bool:
+    return not any(k in name for k in FORBIDDEN_KEYWORDS)
+
+
 
 def clean_ocr_item(item: str, qty: float):
     """
@@ -168,6 +178,11 @@ class TabscannerClient:
             4. Normalize product names (remove brands, packaging, units like 33cl, 500g).
             5. Remove NON-FOOD items (bags, deposits, taxes, receipts).
             6. Clean symbols (*, codes, barcodes).
+            7. Remove items that are not usable cooking ingredients, such as:
+                - packaging (bags, containers)
+                - candy, chewing gum, sweets
+                - non-edible items
+
 
             STRICT RULES:
             - If an item is removed, remove its key-value pair entirely.
@@ -177,6 +192,7 @@ class TabscannerClient:
             - Output MUST be a dictionary.
             - Output language: English only.
             - DO NOT merge multiple items into one key.
+            - Items that are edible but not used in cooking (e.g. chewing gum, candy) MUST be removed.
 
             EXAMPLE:
             Input:
@@ -215,10 +231,11 @@ class TabscannerClient:
             # Fallback strategy:
             # If LLM fails, return lightly cleaned OCR results
             return {
-                k.replace("*", "").strip(): v
+                k: v
                 for k, v in items_dict.items()
-                if len(k) > 2
+                if is_candidate_food_item(k)
             }
+
 
     def _process_receipt(self, image_path, max_attempts, poll_wait):
         """
@@ -288,7 +305,8 @@ class TabscannerClient:
             qty = it.get("qty") or it.get("quantity") or 1
             name, qty = clean_ocr_item(name, qty)
 
-            if name:
+            if name and is_candidate_food_item(name):
                 items[name] = items.get(name, 0) + float(qty)
+
 
         return items
