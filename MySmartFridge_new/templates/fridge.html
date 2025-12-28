@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Manage Fridge - MySmartFridge</title>
+    <style>
+        body { font-family: Arial, sans-serif; margin: 40px; background-color: #f8f9fa; }
+        .container { max-width: 800px; margin: auto; background: white; padding: 20px; border-radius: 8px; box-shadow: 0 0 10px rgba(0,0,0,0.1); }
+        nav { margin-bottom: 20px; border-bottom: 1px solid #ddd; padding-bottom: 10px; }
+        nav a { text-decoration: none; color: #007bff; margin-right: 15px; }
+        table { width: 100%; border-collapse: collapse; margin: 20px 0; }
+        th, td { padding: 12px; border: 1px solid #ddd; text-align: left; }
+        th { background-color: #eee; }
+        .btn-remove { color: white; background-color: #dc3545; border: none; padding: 5px 10px; cursor: pointer; border-radius: 4px; }
+        .btn-add { color: white; background-color: #28a745; border: none; padding: 10px 15px; cursor: pointer; border-radius: 4px; }
+        .btn-clear { color: white; background-color: #6c757d; border: none; padding: 10px 15px; cursor: pointer; border-radius: 4px; margin-top: 20px; }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <nav>
+        <a href="/">← Dashboard</a>
+        <a href="/history">View History</a>
+        <a href="/logout" style="color: #666; float: right;">Logout</a>
+    </nav>
+
+    <h1>Inventory Management</h1>
+    <p>Use this page to manually adjust your fridge items or clear the inventory.</p>
+
+    <table>
+        <thead>
+            <tr>
+                <th>Item Name</th>
+                <th>Quantity</th>
+                <th>Action</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for item, qty in inventory.items() %}
+            <tr>
+                <td>{{ item | capitalize }}</td>
+                <td>{{ qty }}</td>
+                <td>
+                    <form action="/manual_update" method="POST" style="display:inline;">
+                        <input type="hidden" name="item" value="{{ item }}">
+                        <input type="hidden" name="qty" value="1.0">
+                        <input type="hidden" name="action" value="remove">
+                        <button type="submit" class="btn-remove">Remove 1</button>
+                    </form>
+                </td>
+            </tr>
+            {% endfor %}
+            {% if not inventory %}
+            <tr>
+                <td colspan="3" style="text-align: center; color: #888;">Your fridge is currently empty.</td>
+            </tr>
+            {% endif %}
+        </tbody>
+    </table>
+
+    <hr>
+
+    <h3>Add New Item</h3>
+    <form action="/manual_update" method="POST">
+        <input type="hidden" name="action" value="add">
+        <input type="text" name="item" placeholder="Ingredient name" required style="padding: 8px;">
+        <input type="number" name="qty" value="1" min="1" style="padding: 8px; width: 60px;">
+        <button type="submit" class="btn-add">Add to Fridge</button>
+    </form>
+
+    <br>
+
+    <form action="/clear" method="POST" onsubmit="return confirm('Are you sure you want to delete all items in your fridge?');">
+        <button type="submit" class="btn-clear">Empty Entire Fridge</button>
+    </form>
+</div>
+
+</body>
+</html>

@@ -1,0 +1,111 @@
+{
+    "YM": [
+        {
+            "type": "CLEAR",
+            "desc": "Emptied the fridge.",
+            "time": "2025-12-28 22:19"
+        },
+        {
+            "type": "COOK",
+            "desc": "Cooked: None",
+            "time": "2025-12-28 22:19"
+        },
+        {
+            "type": "SCAN",
+            "desc": "Updated fridge via OCR scan.",
+            "time": "2025-12-28 22:18"
+        },
+        {
+            "type": "SCAN",
+            "desc": "Updated fridge via OCR scan.",
+            "time": "2025-12-28 22:18"
+        },
+        {
+            "type": "SCAN",
+            "desc": "Updated fridge via OCR scan.",
+            "time": "2025-12-28 22:17"
+        },
+        {
+            "type": "CLEAR",
+            "desc": "Emptied the fridge.",
+            "time": "2025-12-28 22:16"
+        },
+        {
+            "type": "SCAN",
+            "desc": "Scanned receipt: 2 items added.",
+            "time": "2025-12-28 22:10"
+        },
+        {
+            "type": "SCAN",
+            "desc": "Scanned receipt: 0 items added.",
+            "time": "2025-12-28 22:09"
+        },
+        {
+            "type": "SCAN",
+            "desc": "Scanned receipt: 2 items added.",
+            "time": "2025-12-28 22:08"
+        },
+        {
+            "type": "SCAN",
+            "desc": "Scanned receipt: 0 items added.",
+            "time": "2025-12-28 22:08"
+        },
+        {
+            "type": "COOK",
+            "desc": "Cooked: None",
+            "time": "2025-12-28 21:41"
+        },
+        {
+            "type": "SCAN",
+            "desc": "Receipt processed: 4 items added.",
+            "time": "2025-12-28 21:39"
+        },
+        {
+            "type": "COOK",
+            "desc": "Cooked a meal using 3 ingredients.",
+            "time": "2025-12-28 14:36"
+        },
+        {
+            "type": "COOK",
+            "desc": "Cooked a meal using 1 ingredients.",
+            "time": "2025-12-28 14:31"
+        },
+        {
+            "type": "COOK",
+            "desc": "Cooked a meal using 3 ingredients.",
+            "time": "2025-12-28 14:26"
+        },
+        {
+            "type": "SCAN",
+            "desc": "Added 5 items via receipt scan.",
+            "time": "2025-12-28 14:25"
+        },
+        {
+            "type": "SCAN",
+            "desc": "Added 4 items via receipt scan.",
+            "time": "2025-12-28 14:24"
+        },
+        {
+            "type": "SCAN",
+            "desc": "Added 0 items via receipt scan.",
+            "time": "2025-12-28 14:23"
+        },
+        {
+            "type": "CLEAR",
+            "desc": "Emptied the entire fridge inventory.",
+            "time": "2025-12-28 14:23"
+        }
+    ],
+    "Roselle": [
+        {
+            "type": "COOK",
+            "desc": "Cooked: None",
+            "time": "2025-12-28 21:46"
+        },
+        {
+            "type": "SCAN",
+            "desc": "Receipt processed: 13 items added.",
+            "time": "2025-12-28 21:45"
+        }
+    ]
+}

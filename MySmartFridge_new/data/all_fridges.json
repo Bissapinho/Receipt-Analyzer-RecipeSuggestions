@@ -1,0 +1,17 @@
+{
+  "YM": {
+    "inventory": {}
+  },
+  "Roselle": {
+    "inventory": {
+      "pork": 1.0,
+      "chicken breast": 1.0,
+      "onion": 1.0,
+      "white mushroom": 1.0,
+      "pork belly": 1.0,
+      "cheese": 1.0,
+      "milk": 1.0,
+      "wine (bourguignon)": 1.0
+    }
+  }
+}
