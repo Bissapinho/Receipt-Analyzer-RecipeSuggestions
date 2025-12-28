@@ -95,13 +95,26 @@ class TabscannerClient:
 
     def _ai_refine_list(self, items_dict):
         """
-        Use a local LLM (Ollama) to:
-        - Remove non-food items (bags, taxes, receipts)
-        - Translate items from French to English
-        - Normalize product naming
+        Refine and normalize grocery items using a local LLM (Ollama).
 
-        This step is intentionally isolated so it can be replaced
-        by another LLM or disabled if needed.
+        This method performs semantic post-processing that is difficult
+        to achieve reliably with rule-based logic alone.
+
+        Responsibilities:
+        - Remove non-food items (bags, deposits, taxes, receipts)
+        - Translate item names from French to English
+        - Normalize product naming to generic food categories
+        - Preserve original quantities exactly
+
+        Parameters:
+            items_dict (dict):
+                Dictionary of cleaned OCR items in the form:
+                {item_name: quantity}
+
+        Returns:
+            dict:
+                Refined dictionary with English food item names
+                and unchanged quantities.
         """
         if not items_dict:
             return {}
