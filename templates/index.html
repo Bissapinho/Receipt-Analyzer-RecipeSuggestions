@@ -1,0 +1,254 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dashboard - MySmartFridge</title>
+    <style>
+        /* Import clean, modern font 'Inter' */
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap');
+
+        :root {
+            --primary: #3b82f6;
+            --primary-hover: #2563eb;
+            --success: #10b981;
+            --danger: #ef4444;
+            --bg: #f8fafc;
+            --text-main: #1e293b;
+            --text-muted: #64748b;
+            --border: #e2e8f0;
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: var(--bg);
+            color: var(--text-main);
+            margin: 0;
+        }
+
+        /* --- Header Styles --- */
+        .header {
+            background: #ffffff;
+            padding: 1.2rem 2rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-bottom: 1px solid var(--border);
+            box-shadow: 0 2px 4px rgba(0,0,0,0.02);
+        }
+
+        .header h1 { margin: 0; font-size: 1.5rem; font-weight: 700; letter-spacing: -0.5px; }
+
+        .user-box {
+            font-size: 0.9rem;
+            color: var(--text-muted);
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .logout-btn {
+            color: var(--danger);
+            text-decoration: none;
+            font-weight: 600;
+            font-size: 0.85rem;
+            padding: 6px 12px;
+            background: #fef2f2;
+            border-radius: 6px;
+            transition: background 0.2s;
+        }
+        .logout-btn:hover { background: #fee2e2; }
+
+        .container { max-width: 1000px; margin: 2rem auto; padding: 0 1.5rem; }
+
+        /* --- Grid Layout for Cards --- */
+        .grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 1.5rem;
+            margin-bottom: 2rem;
+            /* FORCE EQUAL HEIGHT: Stretches all cards to match the tallest one */
+            align-items: stretch;
+        }
+
+        /* --- Card Styles --- */
+        .card {
+            background: white;
+            border-radius: 16px;
+            padding: 1.5rem;
+            border: 1px solid var(--border);
+            transition: transform 0.2s, box-shadow 0.2s;
+
+            /* FLEX LAYOUT: Enables vertical stacking control */
+            display: flex;
+            flex-direction: column;
+            height: 100%; /* Fills the grid cell height */
+            box-sizing: border-box;
+        }
+
+        .card:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 10px 15px -3px rgba(0,0,0,0.05);
+        }
+
+        .card h3 { margin-top: 0; font-size: 1.1rem; display: flex; align-items: center; gap: 10px; flex-shrink: 0; }
+
+        /* SPACER: This pushes the buttons to the bottom */
+        .card p {
+            color: var(--text-muted);
+            font-size: 0.9rem;
+            flex-grow: 1; /* Consumes available space */
+            margin-bottom: 1.5rem;
+        }
+
+        /* --- Button Container at Bottom of Card --- */
+        .card-actions {
+            margin-top: auto; /* Anchors container to the bottom */
+            display: flex;
+            flex-direction: column; /* Stacks buttons vertically if needed */
+            gap: 10px;
+        }
+
+        /* --- Button Styles --- */
+        .btn {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 0.75rem 1.2rem;
+            border-radius: 10px;
+            font-weight: 600;
+            font-size: 0.9rem;
+            cursor: pointer;
+            transition: all 0.2s;
+            text-decoration: none;
+            border: none;
+            width: 100%;
+            box-sizing: border-box; /* Ensures padding doesn't break width */
+        }
+
+        .btn-scan { background: var(--success); color: white; }
+        .btn-scan:hover { background: #059669; }
+
+        .btn-suggest { background: var(--primary); color: white; }
+        .btn-suggest:hover { background: var(--primary-hover); }
+
+        .btn-history { background: #f1f5f9; color: var(--text-main); }
+        .btn-history:hover { background: #e2e8f0; }
+
+        /* Empty Fridge Link Style */
+        .btn-clear {
+            color: var(--text-muted);
+            font-size: 0.85rem;
+            background: none;
+            border: none;
+            text-decoration: underline;
+            cursor: pointer;
+            width: 100%;
+            text-align: center;
+            padding: 5px;
+        }
+        .btn-clear:hover { color: var(--danger); }
+
+        /* --- Inventory Table --- */
+        .table-card {
+            background: white;
+            border-radius: 16px;
+            border: 1px solid var(--border);
+            overflow: hidden;
+        }
+        .table-header { padding: 1rem 1.5rem; border-bottom: 1px solid var(--border); font-weight: 700; background: #fafafa; }
+
+        table { width: 100%; border-collapse: collapse; }
+        th { padding: 1rem 1.5rem; text-align: left; font-size: 0.75rem; color: var(--text-muted); text-transform: uppercase; border-bottom: 1px solid var(--border); }
+        td { padding: 1rem 1.5rem; border-bottom: 1px solid var(--border); font-size: 0.95rem; }
+        tr:last-child td { border-bottom: none; }
+
+        .status-pill {
+            background: #dcfce7;
+            color: #166534;
+            padding: 4px 10px;
+            border-radius: 99px;
+            font-size: 0.75rem;
+            font-weight: 700;
+        }
+
+        .empty-state { text-align: center; padding: 4rem; color: var(--text-muted); }
+    </style>
+</head>
+<body>
+    <header class="header">
+        <h1>MySmartFridge 🍳</h1>
+        <div class="user-box">
+            <span>Chef <strong>{{ user }}</strong></span>
+            <a href="/logout" class="logout-btn">Log out</a>
+        </div>
+    </header>
+
+    <div class="container">
+        <div class="grid">
+            <div class="card">
+                <h3>📷 Update Stock</h3>
+                <p>Upload a receipt to sync your kitchen inventory automatically.</p>
+
+                <div class="card-actions">
+                    <form action="/upload" method="post" enctype="multipart/form-data" style="width: 100%;">
+                        <input type="file" name="file" accept="image/*" required style="margin-bottom: 10px; width: 100%; font-size: 0.85rem;">
+                        <button type="submit" class="btn btn-scan">Scan Receipt</button>
+                    </form>
+                </div>
+            </div>
+
+            <div class="card">
+                <h3>👩‍🍳 Smart Chef</h3>
+                <p>Get personalized recipe ideas based on the ingredients currently in your fridge.</p>
+
+                <div class="card-actions">
+                    <a href="/suggest" class="btn btn-suggest">Find Recipes</a>
+                </div>
+            </div>
+
+            <div class="card">
+                <h3>⚙️ Kitchen Ops</h3>
+                <p>Manage your logs or reset the system data.</p>
+
+                <div class="card-actions">
+                    <a href="#" class="btn btn-history" onclick="alert('History feature coming soon!')">View Logs</a>
+
+                    <form action="/clear" method="post" onsubmit="return confirm('Clear all inventory?');">
+                        <button type="submit" class="btn-clear">Empty Fridge</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+
+        <div class="table-card">
+            <div class="table-header">Current Inventory</div>
+            {% if inventory %}
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Ingredient</th>
+                            <th>Status</th>
+                            <th style="text-align: right;">Quantity</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for item, qty in inventory.items() %}
+                        <tr>
+                            <td style="font-weight: 600; color: #334155;">{{ item.title() }}</td>
+                            <td><span class="status-pill">IN STOCK</span></td>
+                            <td style="text-align: right; font-weight: 700; font-family: monospace;">{{ qty }}</td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            {% else %}
+                <div class="empty-state">
+                    <div style="font-size: 2rem; margin-bottom: 10px;">🥦</div>
+                    <p>Your fridge is empty.<br>Scan a receipt to get started.</p>
+                </div>
+            {% endif %}
+        </div>
+    </div>
+</body>
+</html>
