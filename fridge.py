@@ -92,7 +92,7 @@ class Fridge:
         self.nr_ingredients = len(self.inventory)
             
     
-    def save_fridge(self, filename='all_fridges.json'):
+    def save_fridge(self, filename='data/all_fridges.json'):
         """
         Stores fridges and their inventory into json file
         """
@@ -121,7 +121,7 @@ class Fridge:
         self.nr_ingredients = len(self.inventory)
     
     @classmethod # creates a new instance of fridge by loading from json file
-    def load_fridge(cls, user, filename='all_fridges.json'):
+    def load_fridge(cls, user, filename='data/all_fridges.json'):
         try:
             with open(filename, 'r') as f:
                 data = json.load(f)

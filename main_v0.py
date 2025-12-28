@@ -40,7 +40,7 @@ def save_session_to_file(filename="history_log.txt"):
         print(f"Failed to export: {e}")
 
 
-def prompt_username(filename='usernames.json'):
+def prompt_username(filename='data/usernames.json'):
     # Ask for username:
     name = str(input('Enter your username: \n'))
 
@@ -81,7 +81,7 @@ def scan_and_store_fridge(user):
     
     log(f"[FRIDGE] Items added to {user}'s fridge")
 
-def view_fridge(user, filename='usernames.json'):
+def view_fridge(user, filename='data/usernames.json'):
     log(f"[VIEW] User '{user}' viewing fridge")
     
     if os.path.exists(filename):
