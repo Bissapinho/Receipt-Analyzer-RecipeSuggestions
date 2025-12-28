@@ -3,9 +3,15 @@ import time
 import json
 import re
 import os
+from dotenv import load_dotenv
+
+ 
 
 # Tabscanner API Key
-API_KEY = "dfzb14GyfmBUGsFkoIawlI375oewd8tA7szqRHk1glUptAF2qsBy6uPWmmrunxKO"
+load_dotenv()
+API_KEY = os.getenv("API_KEY")
+if not API_KEY:
+    raise RuntimeError("API_KEY not found in .env file")
 
 
 def clean_ocr_item(item: str, qty: float):
