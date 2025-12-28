@@ -47,7 +47,8 @@
     {% else %}
         <div class="recipe-card" style="text-align: center;">
             <h3 style="color: #ef4444;">⚠️ AI Parsing Error</h3>
-            <p>The AI output was malformed. Please try again.</p>
+            <p>Please check that ollama is running. </p>
+            </p>After download add ollama to PATH and run 'serve ollama' in terminal.</p>
             <a href="/suggest" class="btn" style="background: #3b82f6;">Retry Generation</a>
         </div>
     {% endif %}
