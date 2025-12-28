@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Activity Log - MySmartFridge</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap');
+
+        body { font-family: 'Inter', sans-serif; max-width: 800px; margin: auto; padding: 20px; background: #f8fafc; color: #1e293b; }
+
+        /* Modern Card with dynamic border color */
+        .history-card {
+            background: white; border-radius: 12px; padding: 20px; margin-bottom: 12px;
+            border-left: 6px solid #cbd5e1; box-shadow: 0 2px 4px rgba(0,0,0,0.02);
+            position: relative;
+        }
+
+        /* Border colors based on activity type */
+        .border-scan { border-left-color: #10b981; } /* Green for Adding Stock */
+        .border-cook { border-left-color: #3b82f6; } /* Blue for Cooking */
+        .border-clear { border-left-color: #ef4444; } /* Red for Clearing Data */
+
+        .btn {
+            padding: 10px 20px; border-radius: 8px; background: #64748b;
+            color: white; text-decoration: none; display: inline-block; font-weight: 600;
+        }
+        .btn:hover { background: #475569; }
+
+        .date { color: #94a3b8; font-size: 0.8rem; font-weight: 600; text-align: right; margin-bottom: 5px; }
+        h1 { font-size: 2rem; margin-bottom: 1.5rem; letter-spacing: -1px; }
+        hr { margin: 25px 0; border: 0; border-top: 1px solid #e2e8f0; }
+
+        .action-title { margin: 0; font-size: 1.1rem; color: #334155; display: flex; align-items: center; gap: 8px; }
+        .action-desc { font-size: 0.9rem; color: #64748b; margin: 8px 0 0 0; }
+    </style>
+</head>
+<body>
+    <h1>📜 Cooking History</h1>
+    <a href="/" class="btn">← Back to Dashboard</a>
+    <hr>
+
+    {% if logs %}
+        {% for log in logs %}
+        <div class="history-card
+            {% if log.type == 'SCAN' %}border-scan
+            {% elif log.type == 'COOK' %}border-cook
+            {% elif log.type == 'CLEAR' %}border-clear
+            {% endif %}">
+
+            <div class="date">{{ log.time }}</div>
+
+            <h3 class="action-title">
+                {% if log.type == 'SCAN' %} 📷 Stock Updated
+                {% elif log.type == 'COOK' %} 👨‍🍳 Meal Cooked
+                {% elif log.type == 'CLEAR' %} 🗑️ Inventory Cleared
+                {% else %} Activity Recorded
+                {% endif %}
+            </h3>
+
+            <p class="action-desc">{{ log.desc }}</p>
+        </div>
+        {% endfor %}
+    {% else %}
+        <div style="text-align: center; padding: 60px; color: #94a3b8;">
+            <div style="font-size: 3rem; margin-bottom: 1rem;">📭</div>
+            <p>Your history is currently empty.<br>Start using your kitchen to see updates here!</p>
+        </div>
+    {% endif %}
+</body>
+</html>
