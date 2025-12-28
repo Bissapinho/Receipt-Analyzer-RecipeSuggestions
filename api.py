@@ -3,143 +3,244 @@ import time
 import json
 import re
 import os
+from dotenv import load_dotenv
+
+ 
+
+# Tabscanner API Key
+load_dotenv()
+API_KEY = os.getenv("API_KEY")
+if not API_KEY:
+    raise RuntimeError("API_KEY not found in .env file")
 
 
-API_KEY = "dfzb14GyfmBUGsFkoIawlI375oewd8tA7szqRHk1glUptAF2qsBy6uPWmmrunxKO"
-
-# Accounts:
-# Elvira: aR62wn7mREuNIFsKb5Isl8iPRZR4oqtCPURXaSxCVZCa7ecesaJARlJnN1ka7NTi
-# Galle (?): dfzb14GyfmBUGsFkoIawlI375oewd8tA7szqRHk1glUptAF2qsBy6uPWmmrunxKO
-
-#func to use in the class to handle specific items
 def clean_ocr_item(item: str, qty: float):
     """
-    Cleans and normalizes an OCR-extracted receipt line.
-    """
+    Clean and normalize raw OCR text from receipt line items.
 
+    Responsibilities:
+    - Lowercase and normalize whitespace
+    - Remove prices, units, promotions, and marketing keywords
+    - Return a clean item name and numeric quantity
+
+    Parameters:
+        item (str): Raw OCR-extracted item description
+        qty (float): Detected quantity (default is usually 1)
+
+    Returns:
+        tuple(str | None, float | None):
+            - Cleaned item name (or None if invalid)
+            - Quantity as float
+    """
     if not item:
         return None, None
 
-    #Text normalization
+    # Normalize spacing and casing
     item = item.strip().lower()
     item = re.sub(r"\s+", " ", item)
 
-    #Remove prices
-    item = re.sub(r"(€\s*\d+[.,]?\d*|\d+[.,]?\d*\s*(€|eur|/kg))", "", item)
+    # Remove prices and currency indicators (€, EUR, /kg, etc.)
+    item = re.sub(
+        r"(€\s*\d+[.,]?\d*|\d+[.,]?\d*\s*(€|eur|/kg))",
+        "",
+        item
+    )
 
-    #Remove promotions / marketing noise
-    CLEAN_PATTERN = r"""
-        \b(promo|offre|maxi)\b
-        |
-        \b(format\s+familial|grand\s+format)\b
-        |
-        \d+\s*x\s*\d+
-        |
-        \bx\d+\b
-        |
-        -?\d+%
-    """
+    # Remove promotions, formats, multipacks, percentages, etc.
+    CLEAN_PATTERN = (
+        r"\b(promo|offre|maxi)\b"
+        r"|\b(format\s+familial|grand\s+format)\b"
+        r"|\d+\s*x\s*\d+"
+        r"|\bx\d+\b"
+        r"|-?\d+%"
+    )
     item = re.sub(CLEAN_PATTERN, "", item, flags=re.I | re.VERBOSE)
 
-    #Final spacing cleanup
+    # Final whitespace cleanup
     item = re.sub(r"\s{2,}", " ", item).strip()
-
-    #Handle vrac items
-    if "vrac" in item:
-        weight_match = re.search(r"([\d,.]+)\s*kg", item)
-        if weight_match:
-            try:
-                qtykg = float(weight_match.group(1).replace(",", "."))
-                name = (
-                    item.replace(weight_match.group(0), "")
-                        .replace("vrac", "")
-                        .strip()
-                )
-                return name, qtykg
-            except ValueError:
-                return None, None
-
-    #Filter parasitic lines
-    bad_words = ("tva", "ht", "kraft", "payer", "merci", "thank")
-    if any(word in item for word in bad_words):
-        return None, None
-
-    if not item:
-        return None, None
 
     return item, float(qty)
 
 
-        
 class TabscannerClient:
     """
-    Silent Tabscanner OCR client.
-    Returns a dict {ingredient_name: quantity}.
+    Client wrapper for:
+    - Tabscanner OCR API
+    - Local LLM-based grocery item refinement (Ollama)
+
+    Pipeline:
+    Image -> OCR -> Raw Items -> LLM Refinement -> Clean Food List
     """
 
     def __init__(self, api_key=API_KEY):
+        """
+        Initialize client with API key and headers.
+        """
         self.api_key = api_key
         self.headers = {"apikey": self.api_key}
 
     def scan(self, image_path, max_attempts=2, poll_wait=20):
         """
-        Returns a dict: {ingredient_name: qty}.
+        Full receipt scanning pipeline.
+
+        Steps:
+        1. Upload image to Tabscanner
+        2. Poll OCR result
+        3. Extract raw items
+        4. Use LLM to refine and translate items
+
+        Returns:
+            dict: {clean_food_name: quantity}
         """
+        raw_result = self._process_receipt(image_path, max_attempts, poll_wait)
+        initial_items = self._extract_items(raw_result)
 
-        raw = self._process_receipt(image_path, max_attempts, poll_wait)
-        parsed = self._extract_items(raw)
+        # LLM-based post-processing (LLM Refinement)
+        refined_items = self._ai_refine_list(initial_items)
+        return refined_items
 
-        return parsed  # final output: dict(name → qty)
+    def _ai_refine_list(self, items_dict):
+        """
+        Refine and normalize grocery items using a local LLM (Ollama).
 
-    
+        This method performs semantic post-processing that is difficult
+        to achieve reliably with rule-based logic alone.
 
-    #Internal funcs for raw and parsed data
+        Responsibilities:
+        - Remove non-food items (bags, deposits, taxes, receipts)
+        - Translate item names from French to English
+        - Normalize product naming to generic food categories
+        - Preserve original quantities exactly
+
+        Parameters:
+            items_dict (dict):
+                Dictionary of cleaned OCR items in the form:
+                {item_name: quantity}
+
+        Returns:
+            dict:
+                Refined dictionary with English food item names
+                and unchanged quantities.
+        """
+        if not items_dict:
+            return {}
+
+
+        # Prompt engineered for deterministic JSON output
+        prompt = f"""
+            You are a grocery receipt post-processor.
+
+            You are given a Python dictionary where:
+            - keys = OCR-extracted item names (mostly French)
+            - values = quantities (floats or ints)
+
+            INPUT DICTIONARY:
+            {items_dict}
+
+            YOUR TASK:
+            1. Modify ONLY the KEYS.
+            2. NEVER change the VALUES.
+            3. Translate food items to simple, generic English (e.g. "porc" → "pork").
+            4. Normalize product names (remove brands, packaging, units like 33cl, 500g).
+            5. Remove NON-FOOD items (bags, deposits, taxes, receipts).
+            6. Clean symbols (*, codes, barcodes).
+
+            STRICT RULES:
+            - If an item is removed, remove its key-value pair entirely.
+            - For kept items, copy the ORIGINAL quantity EXACTLY.
+            - DO NOT infer, rescale, round, merge, or invent quantities.
+            - Output MUST be valid JSON.
+            - Output MUST be a dictionary.
+            - Output language: English only.
+            - DO NOT merge multiple items into one key.
+
+            EXAMPLE:
+            Input:
+            {{"porc demi sel 500g": 2, "sac kraft": 1}}
+
+            Output:
+            {{"pork": 2}}
+
+            Return ONLY the JSON dictionary.
+            """
+
+        try:
+            response = requests.post(
+                "http://localhost:11434/api/generate",
+                json={
+                    "model": "llama3.2",
+                    "prompt": prompt,
+                    "stream": False,
+                    "format": "json"
+                },
+                timeout=30
+            )
+
+            # Ollama returns JSON inside the "response" field
+            ai_response = response.json()
+            cleaned_data = json.loads(ai_response["response"])
+
+            # Quantity is normalized to 1.0 for now
+            return {
+                str(name).lower().strip(): float(qty)
+                for name, qty in cleaned_data.items()
+            }
+
+
+        except Exception:
+            # Fallback strategy:
+            # If LLM fails, return lightly cleaned OCR results
+            return {
+                k.replace("*", "").strip(): v
+                for k, v in items_dict.items()
+                if len(k) > 2
+            }
+
     def _process_receipt(self, image_path, max_attempts, poll_wait):
+        """
+        Upload receipt image to Tabscanner and poll until OCR is completed.
 
+        Raises:
+            FileNotFoundError: If image path does not exist
+            TimeoutError: If OCR does not finish in time
+        """
         if not os.path.exists(image_path):
             raise FileNotFoundError(f"Image not found: {image_path}")
 
-        # Upload
+        # Step 1: Upload receipt image
         with open(image_path, "rb") as f:
-            r = requests.post(
+            response = requests.post(
                 "https://api.tabscanner.com/api/2/process",
                 headers=self.headers,
-                files={"image": f},
+                files={"image": f}
             )
 
-        js = r.json()
+        js = response.json()
         token = js.get("token") or js.get("id")
-
         if not token:
-            raise RuntimeError(f"Upload failed: {json.dumps(js, indent=2)}")
+            raise RuntimeError("Receipt upload failed")
 
+        # Step 2: Poll OCR result endpoint
         result_url = f"https://api.tabscanner.com/api/result/{token}"
-
         for _ in range(max_attempts):
             time.sleep(poll_wait)
-            # Poll
-            
             r = requests.get(result_url, headers=self.headers)
             js = r.json()
-
-            status = (js.get("status") or "").lower()
-
-            if status in ("success", "done", "completed"): #if any update in the API
+            if js.get("status") in ("success", "done", "completed"):
                 return js
 
-        raise TimeoutError("Tabscanner took too long to process the receipt.")
+        raise TimeoutError("OCR processing timed out")
 
-    
-
-    
     def _extract_items(self, js):
         """
-        Tabscanner JSON → dict {name: qty}
-        """
+        Parse Tabscanner OCR JSON into a basic item-quantity dictionary.
 
+        This method is defensive and supports multiple possible
+        Tabscanner response schemas.
+        """
         result = js.get("result") or {}
 
-        # Possible line item locations depending on Tabscanner version
+        # Handle multiple possible field names from Tabscanner
         line_items = (
             result.get("lineItems")
             or result.get("line_items")
@@ -148,9 +249,8 @@ class TabscannerClient:
         )
 
         items = {}
-
         for it in line_items:
-            # Name extraction (robust)
+            # Try multiple possible keys for item description
             name = (
                 it.get("descClean")
                 or it.get("desc")
@@ -158,30 +258,13 @@ class TabscannerClient:
                 or it.get("item")
                 or it.get("name")
             )
-
             if not name:
                 continue
 
-
-            # Quantity extraction (float)
             qty = it.get("qty") or it.get("quantity") or 1
-
-            try:
-                qty = float(qty)
-            except:
-                qty = 1.0
-
             name, qty = clean_ocr_item(name, qty)
 
-            if name is None:
-                continue
+            if name:
+                items[name] = items.get(name, 0) + float(qty)
 
-            # Store in dictionary
-            items[name] = items.get(name, 0) + qty
-
-        
         return items
-    
-
-
-#next remove prices from the item description
