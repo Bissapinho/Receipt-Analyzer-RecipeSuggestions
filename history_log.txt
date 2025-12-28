@@ -1,68 +1,25 @@
 
 
-==================== Run Session: 2025-11-29 17:16:23 ====================
-
-=== 🍽 Recipe Suggestions ===
-
-[1] Tomato and Egg Toast
-Ingredients:
-  - tomato
-  - egg
-  - bread
-Steps:
-  - Toast bread.
-  - Mash tomato and spread on toast.
-  - Fry egg and place on top.
-
-[2] Onion and Tomato Sandwich
-Ingredients:
-  - onion
-  - tomato
-  - bread
-Steps:
-  - Slice bread.
-  - Grill or sauté onion until softened.
-  - Assemble sandwich with tomato.
-
-[3] Egg and Onion Frittata
-Ingredients:
-  - egg
-  - onion
-  - bread
-Steps:
-  - Beat eggs in a bowl.
-  - Sauté onion until softened.
-  - Pour egg mixture over onion, cook until set.
-
-👍 Accepted: Egg and Onion Frittata
-
-=== 📦 Remaining Inventory ===
-- tomato: 3
-- egg: 3
-- bread: 1
-- onion: 0
-
-=== 📜 History Records (Current Session) ===
-17:16:00 | VIEWED | Tomato and Egg Toast
-17:16:00 | VIEWED | Onion and Tomato Sandwich
-17:16:00 | VIEWED | Egg and Onion Frittata
-17:16:23 | ACCEPTED | Egg and Onion Frittata
+==================== Run Session: 2025-12-28 14:11:09 ====================
+=== Application started ===
+[LOGIN] User 'Elvira' logged in
+[VIEW] User 'Elvira' viewing fridge
+[VIEW] Fridge contents: 15 items
+[SCAN] User 'Elvira' scanning receipt: C:\2_MSc\IntroToPython\Project\IMG_5322.JPG
+[SCAN] Found 3 items: ['* coca cola 33cl sleek', '* porc label.r cote', '* ailes de poulet pf']
+[FRIDGE] Items added to Elvira's fridge
+[LOGOUT] User 'Elvira' exiting
 ============================================================
 
 
-==================== Run Session: 2025-12-25 11:30:05 ====================
-
-=== 🍽 Recipe Suggestions ===
-No suggestions available.
-
-=== 📜 History Records (Current Session) ===
-============================================================
-
-
-==================== Run Session: 2025-12-25 11:33:38 ====================
-
-=== 🍽 Recipe Suggestions ===
-No suggestions available.
-
-=== 📜 History Records (Current Session) ===
+==================== Run Session: 2025-12-28 14:11:48 ====================
+=== Application started ===
+[LOGIN] User 'Alexa' logged in
+[VIEW] User 'Alexa' viewing fridge
+[VIEW] Fridge contents: 0 items
+[VIEW] User 'Alexa' viewing fridge
+[VIEW] Fridge contents: 0 items
+[VIEW] User 'Alexa' viewing fridge
+[VIEW] Fridge contents: 0 items
+[LOGOUT] User 'Alexa' exiting
 ============================================================

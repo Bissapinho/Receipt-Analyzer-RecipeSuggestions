@@ -1,4 +1,3 @@
-from api import TabscannerClient
 from tabulate import tabulate
 import json
 import os
@@ -91,7 +90,6 @@ class Fridge:
         for item, qty in receipt_dic.items():
             self.add_item(item, qty)
         self.nr_ingredients = len(self.inventory)
-        print('Items have been added to fridge!')
             
     
     def save_fridge(self, filename='all_fridges.json'):

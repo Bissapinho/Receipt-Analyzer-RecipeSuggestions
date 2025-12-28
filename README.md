@@ -1,15 +1,15 @@
 
-# Virtual Fridge Web-Application
+# Version 0: Virtual Fridge Web-Application 
 
 ## Description
-A Python app that scans receipts using OCR (Tabscanner), stores items in a smart fridge, and suggests recipes based on available ingredients using Ollama.
+A simple Python app that uses API OCR (Tabscanner) to scan supermarket grocery receipts and stores items in a virtual fridge.
 
 ## Features
-- Receipt scanning with automatic item extraction
+- Login with username
+- Receipt scanning with automatic item extraction, input needed is the image filepath on computer
 - Per-user fridge inventory management
-- AI-powered recipe suggestions (local Ollama)
-- History logging of scans and recipes
-
+- Logging in main script and saves sessions to history_log.txt
+- Simple database management with 2 json files: all_fridges.json and usernames.json, that store information from previous sessions
 
 ## Setup
 
@@ -23,15 +23,10 @@ pip install -r requirements.txt
 ```
 
 - Environment variables:
-	- Copy [.env.example](.env.example) to `.env` and set `API_KEY` for Tabscanner.
-
-- Ollama requirement:
-	- Install Ollama and pull a model (e.g., `llama3.2`). The suggester calls the `ollama` CLI via `subprocess`, so ensure `ollama` is in PATH.
-
-```powershell
-winget install Ollama.Ollama
-ollama pull llama3.2
-```
+	- set `API_KEY` for Tabscanner.
+	- Development API_KEY: `dfzb14GyfmBUGsFkoIawlI375oewd8tA7szqRHk1glUptAF2qsBy6uPWmmrunxKO`
+	- only 200 API calls available per day
+	- if calls run out go to: [text](https://tabscanner.com/), create account and insert new key in api.py as `API_KEY` 
 
 ## Usage
 

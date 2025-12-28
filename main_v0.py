@@ -67,15 +67,23 @@ def prompt_menu():
 def scan_and_store_fridge(user):
     # Scan receipt
     file_path = str(input('Please input the path to your receipt:\n'))
+    log(f"[SCAN] User '{user}' scanning receipt: {file_path}")
+    
     inst = TabscannerClient()
     dic = inst.scan(file_path)
+    
+    log(f"[SCAN] Found {len(dic)} items: {list(dic.keys())}")
 
     # Put into fridge
     fridge = Fridge.load_fridge(user)
     fridge.load_from_receipt(dic)
     fridge.save_fridge()
+    
+    log(f"[FRIDGE] Items added to {user}'s fridge")
 
 def view_fridge(user, filename='usernames.json'):
+    log(f"[VIEW] User '{user}' viewing fridge")
+    
     if os.path.exists(filename):
         with open(filename, 'r') as f:
             usernames = json.load(f)
@@ -83,22 +91,33 @@ def view_fridge(user, filename='usernames.json'):
         usernames = []
 
     if user not in usernames:
+        log(f"[VIEW] {user} does not have a fridge yet")
         return print(f'{user} does not have a fridge yet')
     
     fridge = Fridge.load_fridge(user)
     print(fridge)
+    log(f"[VIEW] Fridge contents: {len(fridge.inventory)} items")
 
 
 # MAIN APP FUNCTION
 def main():
-    print("Application started")
+    log("=== Application started ===")
     user = prompt_username()
+    log(f"[LOGIN] User '{user}' logged in")
+    
     while True:
         choice = prompt_menu()
-        if choice == "1": scan_and_store_fridge(user)
-        elif choice == "2": view_fridge(user)
-        # elif choice == "history": show_history(user)
-        else: break
+        if choice == "1": 
+            scan_and_store_fridge(user)
+        elif choice == "2": 
+            view_fridge(user)
+        else: 
+            log(f"[LOGOUT] User '{user}' exiting")
+            break
+    
+    # Save session log before exit
+    save_session_to_file()
+    print("Session log saved to history_log.txt")
 
 
 if __name__ == '__main__':

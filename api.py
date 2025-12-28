@@ -9,7 +9,7 @@ API_KEY = "dfzb14GyfmBUGsFkoIawlI375oewd8tA7szqRHk1glUptAF2qsBy6uPWmmrunxKO"
 
 # Accounts:
 # Elvira: aR62wn7mREuNIFsKb5Isl8iPRZR4oqtCPURXaSxCVZCa7ecesaJARlJnN1ka7NTi
-# Galle (?): dfzb14GyfmBUGsFkoIawlI375oewd8tA7szqRHk1glUptAF2qsBy6uPWmmrunxKO
+# Galle: dfzb14GyfmBUGsFkoIawlI375oewd8tA7szqRHk1glUptAF2qsBy6uPWmmrunxKO
 
 #func to use in the class to handle specific items
 def clean_ocr_item(item: str, qty: float):
