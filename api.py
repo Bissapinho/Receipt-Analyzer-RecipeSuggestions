@@ -35,31 +35,55 @@ def clean_ocr_item(item: str, qty: float):
     if not item:
         return None, None
 
-    # Normalize spacing and casing
-    item = item.strip().lower()
+    item = item.lower().strip()
     item = re.sub(r"\s+", " ", item)
 
-    # Remove prices and currency indicators (€, EUR, /kg, etc.)
-    item = re.sub(
-        r"(€\s*\d+[.,]?\d*|\d+[.,]?\d*\s*(€|eur|/kg))",
-        "",
-        item
-    )
+    #Extract weight FIRST (before cleaning)
+    weight_kg = None
 
-    # Remove promotions, formats, multipacks, percentages, etc.
-    CLEAN_PATTERN = (
-        r"\b(promo|offre|maxi)\b"
-        r"|\b(format\s+familial|grand\s+format)\b"
+    # 0,156kg | 0.156 kg | 156 g
+    weight_match = re.search(r"([\d.,]+)\s*(kg|g)", item)
+    if weight_match:
+        val, unit = weight_match.groups()
+        try:
+            val = float(val.replace(",", "."))
+            weight_kg = val if unit == "kg" else val / 1000
+        except ValueError:
+            pass
+
+    # Remove prices
+    item = re.sub(r"\d+[.,]?\d*\s*(€|eur|€/kg)", "", item)
+    item = re.sub(r"(€\s*\d+[.,]?\d*)", "", item)
+
+    #Remove packaging / units
+    item = re.sub(r"\b\d+\s*(kg|g|cl|ml|l)\b", "", item)
+
+    #Remove promos & noise
+    item = re.sub(
+        r"\b(promo|offre|maxi|format|familial|bio)\b"
         r"|\d+\s*x\s*\d+"
         r"|\bx\d+\b"
-        r"|-?\d+%"
+        r"|-?\d+%",
+        "",
+        item,
+        flags=re.I,
     )
-    item = re.sub(CLEAN_PATTERN, "", item, flags=re.I | re.VERBOSE)
 
-    # Final whitespace cleanup
+    # Final cleanup
+    item = re.sub(r"[^a-z\s]", "", item)
     item = re.sub(r"\s{2,}", " ", item).strip()
 
-    return item, float(qty)
+    if not item or len(item) < 3:
+        return None, None
+
+    #Qty logic
+    if weight_kg:
+        return item, weight_kg
+
+    try:
+        return item, float(qty) if qty else 1.0
+    except (TypeError, ValueError):
+        return item, 1.0
 
 
 class TabscannerClient:
