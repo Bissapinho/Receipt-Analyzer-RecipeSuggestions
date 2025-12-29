@@ -1,4 +1,4 @@
-from resources.api import TabscannerClient
+from api import TabscannerClient
 from tabulate import tabulate
 import json
 import os
@@ -6,7 +6,25 @@ import os
 
 class Fridge:
     """
-    Fridge class, inventory management
+    The Fridge class tracks items and quantities, supports loading from scanned receipts,
+    saving/loading from persistent JSON storage, and deducting ingredients after cooking recipes.
+
+    Usage:
+        # Create or load existing fridge
+        fridge = Fridge.load_fridge('username')
+        
+        # Add items from receipt
+        fridge.load_from_receipt({'milk': 2, 'eggs': 12})
+        
+        # Check and deduct recipe ingredients
+        if fridge.has_items(recipe):
+            fridge.deduct_by_recipe(recipe)
+        
+        # Save to persistent storage
+        fridge.save_fridge()
+    
+    Storage Format:
+    JSON file with structure: {username: {'inventory': {item: qty, ...}}, ...}
     """
     def __init__(self, username, nr_ingredients=0, inventory=None):
         self.user = username
@@ -14,14 +32,11 @@ class Fridge:
         self.nr_ingredients = len(self.inventory)
 
     def __repr__(self):
-        """
-        How is represented as an object in shell
-        """
         return f'Fridge({self.user}, nr_ingr: {self.nr_ingredients})'
 
     def __str__(self):
         """
-        How fridge is represented when print is called
+        When print is called, fridge is represented as a table with all ingredients contained in fridge and their quantity.
         """
         if not self.inventory:
             return f"{self.user}'s Fridge is empty"
@@ -32,19 +47,25 @@ class Fridge:
 
     def __contains__(self, item):
         """
-        How x in fridge behaves
-        will return true is item is in inventory
+        How x in Fridge() behaves.
+        Returns true if item is in inventory.
         """
         item = item.lower().strip()
         return item in self.inventory and self.inventory[item] > 0
 
 
     def add_item(self, item, qty):
+        """
+        Adds a single food item and a quantity to the inventory of a fridge.
+        """
         item = item.lower().strip()
         self.inventory[item] = self.inventory.get(item, 0) + qty
         self.nr_ingredients = len(self.inventory)
     
-    def remove_item(self, item, qty): # change into dic pair if better for rest of code?
+    def remove_item(self, item, qty):
+        """
+        Removes a single food item and a quantity of it from a fridge's inventory.
+        """
         item = item.lower().strip()
         if item in self.inventory:
             self.inventory[item] = max(0, self.inventory[item] - qty)
@@ -55,13 +76,20 @@ class Fridge:
         
     def deduct_by_recipe(self, recipe):
         """
-        Deducts all items in a recipe if has been cooked
-        Output from Ollama recipe suggester:
-                {
-            "name": "Recipe Name",
-            "ingredients": ["item1", "item2"],
-            "steps": ["step1", "step2"]
-        }
+        Deducts all items in a recipe if has been chosen.
+
+        Paramater 'recipe':
+            Output from Ollama recipe suggester:
+                # Example:
+                    {
+                "name": "Recipe Name",
+                "ingredients": ["item1", "item2"],
+                "steps": ["step1", "step2"]
+            }
+
+        Notes:
+        - If more than 1 unit is needed in the recipe, LLM will output this ingredient several times, so it will be deducted
+            the amount of times that it is needed
         """
         if self.has_items(recipe) == False:
             print('Cant be deducted since not available in fridge')
@@ -75,8 +103,7 @@ class Fridge:
     
     def has_items(self, recipe):
         """
-        For checking whether recipe matches given fridge
-        CHECK: recipe doesn't include number of ingredients needed
+        For checking whether recipe matches items given in fridge.
         """
         for item in recipe['ingredients']:
             if item not in self.inventory:
@@ -86,7 +113,15 @@ class Fridge:
 
     def load_from_receipt(self, receipt_dic):
         """
-        Directly add all items from scanned receipt into fridge
+        Directly adds all items from scanned receipt into fridge.
+
+        Parameters:
+        'receipt_dic':
+            # dictionary with ingredient as key and quantity as value
+            # example:
+                {'ingredient1': 1.0,
+                'ingredient2': 1.0,
+                'ingredient3': 1.0}
         """
         for item, qty in receipt_dic.items():
             self.add_item(item, qty)
@@ -96,7 +131,8 @@ class Fridge:
     
     def save_fridge(self, filename='data/all_fridges.json'):
         """
-        Stores fridges and their inventory into json file
+        Stores fridges and their inventory into json file, according to username.
+        Can later be restored using load_fridge() method.
         """
         # Load or create new file
         if os.path.exists(filename):
@@ -114,7 +150,7 @@ class Fridge:
     
     def clear_fridge(self):
         """
-        Empty fridge
+        Empties fridge's inventory.
         """
         double_checker = input('Are you sure you want to delete all items from fridge? [Yes/No] \n')
         if double_checker == 'Yes':
@@ -124,6 +160,10 @@ class Fridge:
     
     @classmethod # creates a new instance of fridge by loading from json file
     def load_fridge(cls, user, filename='data/all_fridges.json'):
+        """
+        Loads a user's stored fridge from json file if available.
+        Otherwise, creates a new Fridge() object.
+        """
         try:
             with open(filename, 'r') as f:
                 data = json.load(f)
@@ -132,26 +172,3 @@ class Fridge:
             # Create new fridge if file doesn't exist or user not in file
             return cls(user)
 
-
-if __name__ == '__main__':
-    # a = TabscannerClient()
-    # items = a.scan(r"C:\2_MSc\IntroToPython\Project\IMG_8947.jpg")
-    # print(items)
-    items = {
-        'milk': 2.0,
-        'eggs': 1.0,
-        'bread': 1.0
-    }
-
-    b = Fridge('Elvira')
-
-    b.load_from_receipt(items)
-
-    # Test deduct_by_recipe
-    recipe = {
-        'name': 'Omelette',
-        'ingredients': ['eggs', 'milk'],
-        'steps': ['beat eggs', 'cook']
-    }
-    b.deduct_by_recipe(recipe)
-    print(b)
