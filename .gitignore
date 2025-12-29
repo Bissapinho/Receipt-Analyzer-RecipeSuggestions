@@ -12,6 +12,9 @@ __pycache__/
 *.so
 .Python
 
+# Tests
+__pycache__
+
 # JSON data files (fridge saves)
 *_fridge.json
 
