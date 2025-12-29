@@ -19,9 +19,6 @@ __pycache__/
 *.log
 history_log.txt
 
-# Environment variables
-.env
-
 # Flask/webapp
 instance/
 .webassets-cache

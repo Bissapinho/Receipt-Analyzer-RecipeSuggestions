@@ -5,15 +5,20 @@ from fridge import Fridge
 import os
 
 # Global buffer to store all output
-SESSION_LOG = []
 
+# Logging Parameter:
+    # if set to true will output 
+ENABLE_LOGGING = True
+
+SESSION_LOG = []
 
 def log(message=""):
     """
-    Prints to console and appends to the session log buffer.
+    Prints to console and appends to the session log buffer if logging flag set to True.
     """
-    print(message)
-    SESSION_LOG.append(message)
+    if ENABLE_LOGGING:
+        print(message)
+        SESSION_LOG.append(message)
 
 
 def save_session_to_file(filename="history_log.txt"):
@@ -64,6 +69,7 @@ def prompt_menu():
     choice = input('Do you want to (indicate number): \n [1] Scan a receipt \n [2] View your fridge \n')
     return str(choice)
 
+
 def scan_and_store_fridge(user):
     # Scan receipt
     file_path = str(input('Please input the path to your receipt:\n'))
@@ -101,6 +107,8 @@ def view_fridge(user, filename='data/usernames.json'):
 
 # MAIN APP FUNCTION
 def main():
+    if not ENABLE_LOGGING:
+        SESSION_LOG.clear()
     log("=== Application started ===")
     user = prompt_username()
     log(f"[LOGIN] User '{user}' logged in")
@@ -116,8 +124,9 @@ def main():
             break
     
     # Save session log before exit
-    save_session_to_file()
-    print("Session log saved to history_log.txt")
+    if ENABLE_LOGGING:
+        save_session_to_file()
+        print("Session log saved to history_log.txt")
 
 
 if __name__ == '__main__':
