@@ -129,27 +129,3 @@ class Fridge:
         except (FileNotFoundError, KeyError):
             # Create new fridge if file doesn't exist or user not in file
             return cls(user)
-
-
-if __name__ == '__main__':
-    # a = TabscannerClient()
-    # items = a.scan(r"C:\2_MSc\IntroToPython\Project\IMG_8947.jpg")
-    # print(items)
-    items = {
-        'milk': 2.0,
-        'eggs': 1.0,
-        'bread': 1.0
-    }
-
-    b = Fridge('Elvira')
-
-    b.load_from_receipt(items)
-
-    # Test deduct_by_recipe
-    recipe = {
-        'name': 'Omelette',
-        'ingredients': ['eggs', 'milk'],
-        'steps': ['beat eggs', 'cook']
-    }
-    b.deduct_by_recipe(recipe)
-    print(b)
