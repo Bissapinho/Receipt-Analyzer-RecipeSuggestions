@@ -12,9 +12,9 @@ app.secret_key = "smart_fridge_v2_stable_final"
 # Configuration for file storage
 UPLOAD_FOLDER = 'uploads'
 DATA_DIR = 'data'
-HISTORY_FILE = 'history.json'
+HISTORY_FILE = os.path.join(DATA_DIR, 'history.json')
 FRIDGE_FILE = os.path.join(DATA_DIR, 'all_fridges.json')
-RECIPE_HISTORY_FILE = 'recipe_history.json'
+RECIPE_HISTORY_FILE = os.path.join(DATA_DIR, 'recipe_history.json')
 
 # Initialize directory structure
 os.makedirs(UPLOAD_FOLDER, exist_ok=True)
