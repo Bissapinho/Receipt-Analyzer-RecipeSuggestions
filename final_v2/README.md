@@ -54,10 +54,7 @@ If this doesn't work copy the first link in terminal: eg. Running on 'http://127
 Make sure ollama is running and in path.
 
 1. Enter username
-2. Choose action: 
-	1. Scan receipt by uploading an image stored on computer.
-	2. Get recipe suggestions based on current fridge inventory.
-	3. view current fridge
+2. Choose action and navigate through web-app
 
 Press ```ctrl + C ``` to stop running app in corresponding terminal.
 Press ```ctrl + C ``` to stop running ollama in corresponding terminal.
