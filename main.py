@@ -62,22 +62,6 @@ def show_suggestions(suggestions, history=None):
     return None
 
 
-# def update_and_show_inventory(inventory, recipe):
-#     """
-#     Deduct ingredients and log remaining stock.
-#     """
-#     log("\n=== Remaining Inventory ===")
-
-#     if recipe:
-#         for item in recipe.get('ingredients', []):
-#             key = item.lower().strip()
-#             if key in inventory:
-#                 inventory[key] = max(0, inventory[key] - 1)
-
-#     for item, qty in inventory.items():
-#         log(f"- {item}: {qty}")
-
-
 def save_session_to_file(filename="history_log.txt"):
     """
     Writes the entire accumulated session log to the file.
@@ -108,7 +92,6 @@ def main_recipe_suggestor(user):
 
     # 1. Setup inventory
 
-    # Here it will take from fridge class for inventory
     # inventory = {
     #     "tomato": 3,
     #     "egg": 4,
@@ -168,7 +151,7 @@ def prompt_username(filename='usernames.json'):
 
 
 def prompt_menu():
-    choice = input('Do you want to (indicate number): \n [1] Scan a receipt \n [2] Get recipe suggestions \n [3] View your fridge \n')
+    choice = input('Do you want to (indicate number): \n [1] Scan a receipt \n [2] Get recipe suggestions \n [3] View your fridge \n [4] Exit Application \n')
     return str(choice)
 
 def scan_and_store_fridge(user):
@@ -205,7 +188,7 @@ def main():
         if choice == "1": scan_and_store_fridge(user)
         elif choice == "2": main_recipe_suggestor(user)
         elif choice == "3": view_fridge(user)
-        # elif choice == "history": show_history(user)
+        elif choice == "4": break
         else: break
 
 
