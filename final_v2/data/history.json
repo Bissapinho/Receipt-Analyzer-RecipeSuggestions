@@ -134,5 +134,17 @@
             "desc": "Updated fridge via OCR scan.",
             "time": "2025-12-29 11:18"
         }
+    ],
+    "Bissapinho": [
+        {
+            "type": "CLEAR",
+            "desc": "Emptied the fridge.",
+            "time": "2025-12-29 14:17"
+        },
+        {
+            "type": "SCAN",
+            "desc": "Updated fridge via OCR scan.",
+            "time": "2025-12-29 14:16"
+        }
     ]
 }
