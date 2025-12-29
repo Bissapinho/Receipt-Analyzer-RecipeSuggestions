@@ -75,7 +75,7 @@ def index():
     if 'username' not in session:
         return redirect(url_for('login'))
 
-    # Load inventory using teammate's class
+    # Load inventory using fridge class
     user_fridge = Fridge.load_fridge(session['username'], filename=FRIDGE_FILE)
     return render_template('index.html', user=session['username'], inventory=user_fridge.inventory)
 
@@ -207,7 +207,7 @@ def clear():
         return redirect(url_for('login'))
 
     user_fridge = Fridge.load_fridge(session['username'], filename=FRIDGE_FILE)
-    user_fridge.inventory = {}  # Manually reset
+    user_fridge.clear_fridge(confirm=False)
     user_fridge.save_fridge(filename=FRIDGE_FILE)
 
     HistoryLogger.log_action(session['username'], "CLEAR", "Emptied the fridge.")
