@@ -1,0 +1,183 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Recipes Cooked - MySmartFridge</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap');
+
+        :root {
+            --primary: #3b82f6;
+            --success: #10b981;
+            --bg: #f8fafc;
+            --text-main: #1e293b;
+            --text-muted: #64748b;
+            --border: #e2e8f0;
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: var(--bg);
+            color: var(--text-main);
+            margin: 0;
+            padding-bottom: 4rem;
+        }
+
+        /* Header */
+        .header {
+            background: white;
+            padding: 1.5rem 2rem;
+            border-bottom: 1px solid var(--border);
+            box-shadow: 0 2px 4px rgba(0,0,0,0.02);
+        }
+
+        .back-link {
+            text-decoration: none;
+            color: var(--text-muted);
+            font-weight: 600;
+            font-size: 0.9rem;
+            display: inline-flex;
+            align-items: center;
+            gap: 5px;
+            transition: color 0.2s;
+        }
+        .back-link:hover { color: var(--primary); }
+
+        .container {
+            max-width: 900px;
+            margin: 2rem auto;
+            padding: 0 1.5rem;
+        }
+
+        h1 {
+            margin: 0 0 2rem 0;
+            font-size: 2rem;
+            letter-spacing: -1px;
+            text-align: center;
+        }
+
+        /* Recipe Card */
+        .recipe-card {
+            background: white;
+            border-radius: 16px;
+            padding: 2rem;
+            margin-bottom: 1.5rem;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.04);
+            border: 1px solid var(--border);
+        }
+
+        .recipe-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1.5rem;
+            border-bottom: 2px solid #f1f5f9;
+            padding-bottom: 1rem;
+        }
+
+        .recipe-title {
+            font-size: 1.4rem;
+            margin: 0;
+            color: var(--text-main);
+        }
+
+        .recipe-time {
+            font-size: 0.85rem;
+            color: var(--text-muted);
+        }
+
+        .recipe-content {
+            display: grid;
+            grid-template-columns: 1fr 2fr;
+            gap: 2rem;
+        }
+
+        h4 {
+            text-transform: uppercase;
+            font-size: 0.75rem;
+            color: #94a3b8;
+            letter-spacing: 1px;
+            margin: 0 0 1rem 0;
+        }
+
+        ul, ol {
+            padding-left: 1.2rem;
+            margin: 0;
+        }
+
+        li {
+            margin-bottom: 0.5rem;
+            line-height: 1.6;
+            color: #475569;
+        }
+
+        .empty-state {
+            text-align: center;
+            padding: 4rem 1rem;
+            color: var(--text-muted);
+        }
+
+        .empty-state .icon {
+            font-size: 3rem;
+            margin-bottom: 1rem;
+        }
+
+        @media (max-width: 700px) {
+            .recipe-content { grid-template-columns: 1fr; }
+            .recipe-header { flex-direction: column; align-items: flex-start; gap: 0.5rem; }
+        }
+    </style>
+</head>
+<body>
+    <header class="header">
+        <a href="/" class="back-link">← Back to Dashboard</a>
+    </header>
+
+    <div class="container">
+        <h1>📖 Recipes You've Cooked</h1>
+
+        {% if recipes %}
+            {% for recipe in recipes %}
+            <div class="recipe-card">
+                <div class="recipe-header">
+                    <h2 class="recipe-title">{{ recipe.name }}</h2>
+                    <span class="recipe-time">{{ recipe.time }}</span>
+                </div>
+
+                <div class="recipe-content">
+                    <div>
+                        <h4>Ingredients</h4>
+                        <ul>
+                            {% for ing in recipe.ingredients %}
+                            <li>{{ ing }}</li>
+                            {% endfor %}
+                        </ul>
+                    </div>
+
+                    <div>
+                        <h4>Steps</h4>
+                        {% if recipe.steps %}
+                        <ol>
+                            {% for step in recipe.steps %}
+                            <li>{{ step }}</li>
+                            {% endfor %}
+                        </ol>
+                        {% else %}
+                        <p style="color: var(--text-muted); font-size: 0.9rem;">No steps recorded.</p>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+            {% endfor %}
+        {% else %}
+            <div class="empty-state">
+                <div class="icon">🍽️</div>
+                <p>You haven't cooked any recipes yet.</p>
+                <p style="font-size: 0.9rem;">Try getting recipe suggestions from your fridge!</p>
+                <a href="/suggest" class="back-link" style="justify-content: center; margin-top: 1rem;">Find Recipes</a>
+            </div>
+        {% endif %}
+    </div>
+</body>
+</html>

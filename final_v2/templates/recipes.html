@@ -134,7 +134,20 @@
     <div class="container">
         <h1>🍽️ Chef's Recommendations</h1>
 
-        {% if recipes %}
+        {% if error_message %}
+            <div style="text-align: center; margin-top: 3rem;">
+                <div style="background: #fef2f2; border: 2px solid #fca5a5; border-radius: 12px; padding: 2rem; max-width: 600px; margin: 0 auto;">
+                    <div style="font-size: 3rem; margin-bottom: 1rem;">⚠️</div>
+                    <h3 style="color: #dc2626; margin-top: 0;">Ollama Not Running</h3>
+                    <p style="color: #475569; line-height: 1.6;">{{ error_message }}</p>
+                    <div style="background: #f8fafc; padding: 1rem; border-radius: 8px; margin-top: 1.5rem; text-align: left;">
+                        <p style="font-size: 0.85rem; color: #64748b; margin: 0 0 0.5rem 0;"><strong>Quick fix:</strong></p>
+                        <code style="background: white; padding: 0.5rem; display: block; border-radius: 4px; font-size: 0.9rem; color: #334155;">ollama serve</code>
+                    </div>
+                    <a href="/" class="back-link" style="justify-content: center; margin-top: 1.5rem; display: inline-flex;">← Return to Dashboard</a>
+                </div>
+            </div>
+        {% elif recipes %}
             {% for recipe in recipes %}
             <div class="recipe-card">
                 <span class="badge-match">Personalized Selection</span>
@@ -162,8 +175,12 @@
 
                 <div class="cook-section">
                     <form action="/cook" method="post">
+                        <input type="hidden" name="recipe_name" value="{{ recipe.name }}">
                         {% for ing in recipe.ingredients %}
                         <input type="hidden" name="ingredients" value="{{ ing }}">
+                        {% endfor %}
+                        {% for step in recipe.steps %}
+                        <input type="hidden" name="steps" value="{{ step }}">
                         {% endfor %}
 
                         <button type="submit" class="btn-cook">

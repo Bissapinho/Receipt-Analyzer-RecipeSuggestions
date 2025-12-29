@@ -114,6 +114,9 @@
                         <input type="file" name="file" accept="image/*" required style="margin-bottom: 10px; width: 100%; font-size: 0.85rem;">
                         <button type="submit" class="btn btn-scan">Scan Receipt</button>
                     </form>
+                    <div style="text-align:center; margin-top: 6px;">
+                        <a href="/fridge" class="btn-clear" style="display:inline-block;">Manual adjustments</a>
+                    </div>
                 </div>
             </div>
 
@@ -122,12 +125,15 @@
                 <p>Discover recipes customized to your current ingredients.</p>
                 <div class="card-actions">
                     <a href="/suggest" class="btn btn-suggest">Find Recipes</a>
+                    <div style="text-align:center; margin-top: 6px;">
+                        <a href="/recipe_history" class="btn-clear" style="display:inline-block;">Recipes cooked</a>
+                    </div>
                 </div>
             </div>
 
             <div class="card">
                 <h3>⚙️ Kitchen Ops</h3>
-                <p>View your kitchen activity log or reset your data.</p>
+                <p>View your kitchen activity log or reset your fridge inventory.</p>
                 <div class="card-actions">
                     <a href="/history" class="btn btn-history">View Logs</a>
                     <form action="/clear" method="post" onsubmit="return confirm('Clear inventory?');">

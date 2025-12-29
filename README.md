@@ -36,6 +36,9 @@ pip install -r requirements.txt
 
 ```powershell
 winget install Ollama.Ollama
+```
+Go to same cd as app.py
+```
 ollama serve
 ollama pull llama3.2
 ```
