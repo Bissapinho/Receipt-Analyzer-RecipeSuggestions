@@ -51,38 +51,6 @@ class Fridge:
                 del self.inventory[item]
         self.nr_ingredients = len(self.inventory)
 
-        
-    def deduct_by_recipe(self, recipe):
-        """
-        Deducts all items in a recipe if has been cooked
-        Output from Ollama recipe suggester:
-                {
-            "name": "Recipe Name",
-            "ingredients": ["item1", "item2"],
-            "steps": ["step1", "step2"]
-        }
-        """
-        if self.has_items(recipe) == False:
-            print('Cant be deducted since not available in fridge')
-            return None
-        for ingredient in recipe['ingredients']:
-            self.remove_item(ingredient, 1) # need to see how we can match number of ingredients with recipe output
-        self.nr_ingredients = len(self.inventory)
-        print('Ingredients have been removed from recipe')
-        print(f'Inventory left in fridge is: \n {self.inventory}')
-
-    
-    def has_items(self, recipe):
-        """
-        For checking whether recipe matches given fridge
-        CHECK: recipe doesn't include number of ingredients needed
-        """
-        for item in recipe['ingredients']:
-            if item not in self.inventory:
-                print(f"There is no {item} in fridge.")
-                return False
-        return True
-
     def load_from_receipt(self, receipt_dic):
         """
         Directly add all items from scanned receipt into fridge
