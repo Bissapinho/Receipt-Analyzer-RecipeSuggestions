@@ -148,14 +148,18 @@ class Fridge:
             json.dump(all_data, f, indent=2)
 
     
-    def clear_fridge(self):
+    def clear_fridge(self, confirm=True):
         """
-        Empties fridge's inventory.
+        Empties fridge's inventory. When confirm is True, asks for CLI confirmation; when False, clears immediately (for non-interactive calls like the web app).
         """
-        double_checker = input('Are you sure you want to delete all items from fridge? [Yes/No] \n')
-        if double_checker == 'Yes':
-            self.inventory = {}
-            print('All items deleted from fridge')
+        if confirm:
+            double_checker = input('Are you sure you want to delete all items from fridge? [Yes/No] \n')
+            if double_checker != 'Yes':
+                self.nr_ingredients = len(self.inventory)
+                return
+
+        self.inventory = {}
+        print('All items deleted from fridge')
         self.nr_ingredients = len(self.inventory)
     
     @classmethod # creates a new instance of fridge by loading from json file
