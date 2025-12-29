@@ -69,6 +69,13 @@ Run from the project directory:
 python main.py
 ```
 
+### Starting ollama 
+Run from project directory, in new terminal:
+```powershell
+ollama serve
+```
+
+
 ### Application Workflow
 
 1. **Enter Username**: The app will prompt for a username (creates new user if doesn't exist)
@@ -96,77 +103,10 @@ python main.py
    - All activities saved to `history_log.txt` with timestamps
    - Includes recipe views, acceptances, and inventory changes
 
-## Project Structure
-
-```
-Receipt-Analyzer-RecipeSuggestions/
-├── main.py                      # Main application entry point
-├── fridge.py                    # Fridge class for inventory management
-├── api.py                       # Tabscanner API client
-├── recipe_suggester_ollama.py   # Ollama integration for recipe generation
-├── recipe_history.py            # Recipe tracking utilities
-├── all_fridges.json             # Persistent storage for all user inventories
-├── usernames.json               # List of registered users
-├── history_log.txt              # Session activity logs
-├── requirements.txt             # Python dependencies
-├── .env                         # Environment variables (API keys)
-├── .popvenv/                    # Python virtual environment
-└── __pycache__/                 # Python bytecode cache
-```
-
 ## Data Storage
 
 - **all_fridges.json**: Stores per-user inventory in format `{username: {inventory: {item: quantity}}}`
 - **usernames.json**: Simple list of registered usernames
 - **history_log.txt**: Append-only log file with timestamped sessions
 
-## Technical Details
-
-### OCR Processing
-- Uses Tabscanner API for receipt scanning
-- Automatic text cleaning: removes prices, promotions, duplicates
-- Handles bulk/weight items (e.g., "500g flour" → "flour": 0.5)
-- Normalizes quantities and item names
-
-### Recipe Generation
-- Calls local Ollama LLM via subprocess
-- Model: llama3.2
-- Generates structured JSON output with recipes
-- Robust JSON parsing with fallback error handling
-- Handles incomplete or malformed LLM responses
-
-### Inventory Management
-- Case-insensitive item matching
-- Automatic quantity aggregation
-- Supports fractional quantities
-- Deducts ingredients when recipes are cooked
-
-## Troubleshooting
-
-**Ollama not found error**:
-- Ensure Ollama is installed and added to PATH
-- Verify with: `ollama --version`
-
-**Tabscanner API errors**:
-- Check your API key in `.env` or `api.py`
-- Verify internet connection for API requests
-
-**JSON parsing errors**:
-- Enhanced cleaning handles most malformed outputs
-- Check console for debug output from Ollama
-
-**Empty fridge after scanning**:
-- Verify receipt image quality
-- Check `history_log.txt` for extracted items
-
-## Development Notes
-
-- Virtual environment name: `.popvenv`
-- Python version: 3.13.5
-- Tested on Windows with PowerShell
-- Tabscanner API endpoint hardcoded in `api.py`
-
-## License
-
-Educational project for Introduction to Python course.
 

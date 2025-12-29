@@ -6,6 +6,10 @@ from resources.api import TabscannerClient
 from resources.fridge import Fridge
 import os
 
+# Logging Parameter:
+    # if set to true will output 
+ENABLE_LOGGING = True
+
 # Global buffer to store all output
 SESSION_LOG = []
 
@@ -14,8 +18,9 @@ def log(message=""):
     """
     Prints to console and appends to the session log buffer.
     """
-    print(message)
-    SESSION_LOG.append(message)
+    if ENABLE_LOGGING:
+        print(message)
+        SESSION_LOG.append(message)
 
 
 def show_suggestions(suggestions, history=None):

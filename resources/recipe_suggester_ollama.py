@@ -95,8 +95,8 @@ Format:
 ]
 """
 
-
-if __name__ == "__main__":
-    # 简单的测试
-    s = RecipeSuggesterOllama()
-    print(s.suggest({"egg": 2}))
+# For manual testing:
+# if __name__ == "__main__":
+#     # 简单的测试
+#     s = RecipeSuggesterOllama()
+#     print(s.suggest({"egg": 2}))

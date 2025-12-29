@@ -1,4 +1,4 @@
-from api import TabscannerClient
+from resources.api import TabscannerClient
 from tabulate import tabulate
 import json
 import os
