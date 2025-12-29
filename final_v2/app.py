@@ -16,6 +16,9 @@ HISTORY_FILE = os.path.join(DATA_DIR, 'history.json')
 FRIDGE_FILE = os.path.join(DATA_DIR, 'all_fridges.json')
 RECIPE_HISTORY_FILE = os.path.join(DATA_DIR, 'recipe_history.json')
 
+# Configuration for debugging
+DEBUGGER = False
+
 # Initialize directory structure
 os.makedirs(UPLOAD_FOLDER, exist_ok=True)
 os.makedirs(DATA_DIR, exist_ok=True)
@@ -248,4 +251,4 @@ if __name__ == '__main__':
     if not os.path.exists(FRIDGE_FILE) or os.path.getsize(FRIDGE_FILE) < 2:
         with open(FRIDGE_FILE, 'w') as f:
             json.dump({}, f)
-    app.run(host='0.0.0.0', port=5001, debug=True)
+    app.run(host='0.0.0.0', port=5001, debug=DEBUGGER)

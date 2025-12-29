@@ -26,13 +26,12 @@ class Fridge:
     Storage Format:
     JSON file with structure: {username: {'inventory': {item: qty, ...}}, ...}
     """
-    def __init__(self, username, nr_ingredients=0, inventory=None):
+    def __init__(self, username, inventory=None):
         self.user = username
         self.inventory = inventory if inventory else {}
-        self.nr_ingredients = len(self.inventory)
 
     def __repr__(self):
-        return f'Fridge({self.user}, nr_ingr: {self.nr_ingredients})'
+        return f'Fridge({self.user}, items: {len(self.inventory)})'
 
     def __str__(self):
         """
@@ -60,7 +59,6 @@ class Fridge:
         """
         item = item.lower().strip()
         self.inventory[item] = self.inventory.get(item, 0) + qty
-        self.nr_ingredients = len(self.inventory)
     
     def remove_item(self, item, qty):
         """
@@ -71,7 +69,16 @@ class Fridge:
             self.inventory[item] = max(0, self.inventory[item] - qty)
             if self.inventory[item] == 0:
                 del self.inventory[item]
-        self.nr_ingredients = len(self.inventory)
+    
+    def has_items(self, recipe):
+        """
+        For checking whether recipe matches items given in fridge.
+        """
+        for item in recipe['ingredients']:
+            if item not in self.inventory:
+                print(f"There is no {item} in fridge.")
+                return False
+        return True
 
         
     def deduct_by_recipe(self, recipe):
@@ -96,20 +103,8 @@ class Fridge:
             return None
         for ingredient in recipe['ingredients']:
             self.remove_item(ingredient, 1) # need to see how we can match number of ingredients with recipe output
-        self.nr_ingredients = len(self.inventory)
         print('Ingredients have been removed from recipe')
         print(f'Inventory left in fridge is: \n {self.inventory}')
-
-    
-    def has_items(self, recipe):
-        """
-        For checking whether recipe matches items given in fridge.
-        """
-        for item in recipe['ingredients']:
-            if item not in self.inventory:
-                print(f"There is no {item} in fridge.")
-                return False
-        return True
 
     def load_from_receipt(self, receipt_dic):
         """
@@ -125,7 +120,6 @@ class Fridge:
         """
         for item, qty in receipt_dic.items():
             self.add_item(item, qty)
-        self.nr_ingredients = len(self.inventory)
         print('Items have been added to fridge!')
             
     
@@ -155,12 +149,10 @@ class Fridge:
         if confirm:
             double_checker = input('Are you sure you want to delete all items from fridge? [Yes/No] \n')
             if double_checker != 'Yes':
-                self.nr_ingredients = len(self.inventory)
                 return
 
         self.inventory = {}
         print('All items deleted from fridge')
-        self.nr_ingredients = len(self.inventory)
     
     @classmethod # creates a new instance of fridge by loading from json file
     def load_fridge(cls, user, filename='data/all_fridges.json'):
